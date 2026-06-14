@@ -153,7 +153,7 @@ export default function App() {
       <div className="login-container">
         <div className="login-glass-card animate-scale">
           <div className="flex-center" style={{ marginBottom: '24px' }}>
-            <img src="https://bnbgirl.com/wp-content/uploads/2026/03/logo-BjMcg-i3__2___1_-removebg-preview.png" alt="Bold & Brilliant Girls Logo" style={{ height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 4px 12px rgba(147, 51, 234, 0.45))' }} />
+            <img src="/logo-main.png" alt="Bold & Brilliant Girls Logo" style={{ height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 4px 12px rgba(147, 51, 234, 0.45))' }} />
           </div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: '900', marginBottom: '8px', background: 'var(--theme-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>BBG Platform</h1>
           <p style={{ color: 'hsl(var(--text-secondary))', fontSize: '14px', marginBottom: '32px' }}>Bold & Brilliant Girls Admin Dashboard</p>
@@ -220,7 +220,7 @@ export default function App() {
       {/* Mobile Top Header */}
       <div className="mobile-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src="https://bnbgirl.com/wp-content/uploads/2026/03/cropped-logo-BjMcg-i3__2___1_-removebg-preview-192x192.png" alt="BBG Logo" style={{ height: '32px', width: '32px', objectFit: 'contain' }} />
+          <img src="/logo-192x192.png" alt="BBG Logo" style={{ height: '32px', width: '32px', objectFit: 'contain' }} />
           <span className="brand-title" style={{ fontSize: '18px' }}>BBG Platform</span>
         </div>
         <button className={`hamburger-btn ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle Menu">
@@ -233,7 +233,7 @@ export default function App() {
       {/* Sidebar Navigation */}
       <div className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="sidebar-brand" style={{ padding: '0 20px', gap: '8px' }}>
-          <img src="https://bnbgirl.com/wp-content/uploads/2026/03/cropped-logo-BjMcg-i3__2___1_-removebg-preview-192x192.png" alt="BBG Logo" style={{ height: '36px', width: '36px', objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(147,51,234,0.3))' }} />
+          <img src="/logo-192x192.png" alt="BBG Logo" style={{ height: '36px', width: '36px', objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(147,51,234,0.3))' }} />
           <span className="brand-title">BBG Platform</span>
         </div>
         
