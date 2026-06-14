@@ -1120,4 +1120,26 @@ input:checked + .toggle-slider:before {
   margin-bottom: 12px;
 }
 
+/* Custom tighter styling for metric cards */
+.metric-card {
+  padding: 12px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+
+.metric-card .card-breakdown {
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid hsl(var(--border-color) / 0.5) !important;
+  gap: 6px !important;
+}
+
+.metric-card .sub-pill {
+  font-size: 10px !important;
+  padding: 1px 5px !important;
+  border-radius: 4px !important;
+}
+
+
 

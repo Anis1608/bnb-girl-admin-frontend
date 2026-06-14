@@ -597,7 +597,7 @@ function DashboardView({ apiFetch, setView, showToast }) {
               <span style={{ fontSize: '20px' }}>{card.icon}</span>
             </div>
             <div style={{ fontSize: '30px', fontFamily: 'var(--font-display)', fontWeight: '800', marginBottom: '2px', lineHeight: '1.1' }}>{card.value}</div>
-            <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>{card.desc}</span>
+            <div style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', lineHeight: '1.2' }}>{card.desc}</div>
             {card.breakdowns && (
               <div className="card-breakdown">
                 {card.breakdowns.map((b, idx) => (
