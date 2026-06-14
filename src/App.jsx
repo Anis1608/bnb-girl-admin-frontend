@@ -213,7 +213,7 @@ export default function App() {
                   required 
                   value={loginUser} 
                   onChange={(e) => setLoginUser(e.target.value)} 
-                  placeholder="Enter username" 
+                  placeholder="Enter username (admin)" 
                 />
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function App() {
                   required 
                   value={loginPass} 
                   onChange={(e) => setLoginPass(e.target.value)} 
-                  placeholder="Enter password" 
+                  placeholder="Enter password (admin123)" 
                 />
                 <button 
                   type="button" 
