@@ -271,18 +271,6 @@ export default function App() {
 
       {/* Main Wrapper */}
       <div className="main-wrapper">
-        <div className="header">
-          <div>
-            <span style={{ fontSize: '13px', color: 'hsl(var(--text-muted))' }}>BBG Platform / {activeView.charAt(0).toUpperCase() + activeView.slice(1)}</span>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <a href="/" target="_blank" className="btn btn-secondary btn-sm" style={{ display: 'flex', gap: '6px' }}>
-              <ExternalLink size={14} />
-              <span>Visit Site</span>
-            </a>
-          </div>
-        </div>
-
         <div className="content-area">
           <div className="animate-fade">
             {activeView === 'dashboard' && <DashboardView apiFetch={apiFetch} setView={handleViewChange} categories={categories} episodes={episodes} />}
