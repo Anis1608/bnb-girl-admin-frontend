@@ -13,8 +13,13 @@ export default function App() {
   const [token, setToken] = useState(localStorage.getItem('bbg_token') || '');
   const [username, setUsername] = useState(localStorage.getItem('bbg_username') || '');
   const [toast, setToast] = useState(null);
+  const [confirmConfig, setConfirmConfig] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const showConfirm = (message, onConfirm) => {
+    setConfirmConfig({ message, onConfirm });
+  };
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -281,6 +286,40 @@ export default function App() {
         </div>
       )}
 
+      {/* Custom Confirmation Modal */}
+      {confirmConfig && (
+        <div className="confirm-overlay" onClick={() => setConfirmConfig(null)}>
+          <div className="confirm-card" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-header">
+              <div className="confirm-icon-wrap">
+                <Trash2 size={20} />
+              </div>
+              <div className="confirm-title">Are you sure?</div>
+            </div>
+            <div className="confirm-body">{confirmConfig.message}</div>
+            <div className="confirm-actions">
+              <button 
+                type="button"
+                className="btn btn-cancel" 
+                onClick={() => setConfirmConfig(null)}
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                className="btn btn-danger" 
+                onClick={() => {
+                  confirmConfig.onConfirm();
+                  setConfirmConfig(null);
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Overlay for Mobile */}
       <div className={`sidebar-overlay ${isMobileMenuOpen ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
 
@@ -360,10 +399,10 @@ export default function App() {
           <div className="animate-fade">
             <Routes>
               <Route path="/dashboard" element={<DashboardView apiFetch={apiFetch} setView={handleViewChange} showToast={showToast} />} />
-              <Route path="/episodes" element={<EpisodesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
-              <Route path="/mentors" element={<MentorsView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} episodes={episodes} />} />
-              <Route path="/categories" element={<CategoriesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
-              <Route path="/resources" element={<ResourcesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />} />
+              <Route path="/episodes" element={<EpisodesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
+              <Route path="/mentors" element={<MentorsView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} episodes={episodes} />} />
+              <Route path="/categories" element={<CategoriesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
+              <Route path="/resources" element={<ResourcesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />} />
               <Route path="/submissions" element={<SubmissionsView apiFetch={apiFetch} showToast={showToast} />} />
               <Route path="/stats" element={<StatsView apiFetch={apiFetch} showToast={showToast} />} />
               <Route path="/cms" element={<CmsView apiFetch={apiFetch} showToast={showToast} />} />
@@ -910,7 +949,7 @@ function DashboardView({ apiFetch, setView, showToast }) {
 }
 
 // ── 2. EPISODES VIEW ─────────────────────────────────────────────────
-function EpisodesView({ apiFetch, showToast, categories, subcategories, specializedFields, loadGlobalLists }) {
+function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategories, specializedFields, loadGlobalLists }) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -990,6 +1029,11 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
         guest_photo: photoUrl
       };
 
+      // Sanitize empty ObjectId fields to null to prevent casting errors in MongoDB
+      if (submissionData.category_id === '') submissionData.category_id = null;
+      if (submissionData.subcategory_id === '') submissionData.subcategory_id = null;
+      if (submissionData.specialized_field_id === '') submissionData.specialized_field_id = null;
+
       if (formData._id) {
         // Update
         await apiFetch(`/admin/episodes/${formData._id}`, {
@@ -1016,15 +1060,16 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to permanently delete this episode?')) return;
-    try {
-      await apiFetch(`/admin/episodes/${id}`, { method: 'DELETE' });
-      showToast('Episode deleted successfully.');
-      loadEpisodes();
-      loadGlobalLists();
-    } catch (err) {
-      showToast(err.message, 'danger');
-    }
+    showConfirm('Are you sure you want to permanently delete this episode?', async () => {
+      try {
+        await apiFetch(`/admin/episodes/${id}`, { method: 'DELETE' });
+        showToast('Episode deleted successfully.');
+        loadEpisodes();
+        loadGlobalLists();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
   };
 
   const getFilteredSubs = () => {
@@ -1185,7 +1230,7 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
                 <div className="form-group">
                   <label>Episode Number</label>
                   <input 
-                    type="text" className="input-field" name="episode_number" placeholder="e.g. 01"
+                    type="number" className="input-field" name="episode_number" placeholder="e.g. 1" min="0"
                     value={formData.episode_number} onChange={handleTextChange} 
                   />
                 </div>
@@ -1473,7 +1518,7 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
 }
 
 // ── 3. MENTORS VIEW ──────────────────────────────────────────────────
-function MentorsView({ apiFetch, showToast, categories, subcategories, specializedFields, episodes }) {
+function MentorsView({ apiFetch, showToast, showConfirm, categories, subcategories, specializedFields, episodes }) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingMentor, setEditingMentor] = useState(null); // null = listing, else form object
@@ -1554,6 +1599,11 @@ function MentorsView({ apiFetch, showToast, categories, subcategories, specializ
 
       const { subcategory_id, ...mentorPayload } = submissionData;
 
+      // Sanitize empty ObjectId fields to null to prevent MongoDB casting errors
+      if (mentorPayload.category_id === '') mentorPayload.category_id = null;
+      if (mentorPayload.specialized_field_id === '') mentorPayload.specialized_field_id = null;
+      if (mentorPayload.episode_id === '') mentorPayload.episode_id = null;
+
       if (formData._id) {
         await apiFetch(`/admin/mentors/${formData._id}`, {
           method: 'PUT',
@@ -1577,14 +1627,15 @@ function MentorsView({ apiFetch, showToast, categories, subcategories, specializ
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this dedicated mentor permanently?')) return;
-    try {
-      await apiFetch(`/admin/mentors/${id}`, { method: 'DELETE' });
-      showToast('Mentor deleted successfully.');
-      loadMentors();
-    } catch (err) {
-      showToast(err.message, 'danger');
-    }
+    showConfirm('Delete this dedicated mentor permanently?', async () => {
+      try {
+        await apiFetch(`/admin/mentors/${id}`, { method: 'DELETE' });
+        showToast('Mentor deleted successfully.');
+        loadMentors();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
   };
 
   if (editingMentor === null) {
@@ -1847,7 +1898,7 @@ function MentorsView({ apiFetch, showToast, categories, subcategories, specializ
 }
 
 // ── 4. CATEGORIES VIEW ───────────────────────────────────────────────
-function CategoriesView({ apiFetch, showToast, categories, subcategories, specializedFields, loadGlobalLists }) {
+function CategoriesView({ apiFetch, showToast, showConfirm, categories, subcategories, specializedFields, loadGlobalLists }) {
   const [editingCatId, setEditingCatId] = useState(null);
   const [catForm, setCatForm] = useState({ name: '', color: '#9333EA', icon: '📚', description: '', sort_order: 0 });
   
@@ -1856,6 +1907,23 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
 
   const [editingSfId, setEditingSfId] = useState(null);
   const [sfForm, setSfForm] = useState({ subcategory_id: '', name: '', sort_order: 0 });
+
+  const [expandedCatId, setExpandedCatId] = useState(null);
+
+  useEffect(() => {
+    if (categories.length > 0 && !expandedCatId) {
+      setExpandedCatId(categories[0]._id);
+    }
+  }, [categories]);
+
+  const scrollToForm = (formId) => {
+    setTimeout(() => {
+      const el = document.getElementById(formId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 80);
+  };
 
   // Handle Category Submit
   const handleCatSubmit = async (e) => {
@@ -1933,36 +2001,39 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
   };
 
   const handleDeleteCat = async (id) => {
-    if (!window.confirm('Delete category and all its nested subcategories permanently?')) return;
-    try {
-      await apiFetch(`/admin/categories/${id}`, { method: 'DELETE' });
-      showToast('Category deleted.');
-      loadGlobalLists();
-    } catch (err) {
-      showToast(err.message, 'danger');
-    }
+    showConfirm('Delete category and all its nested subcategories permanently?', async () => {
+      try {
+        await apiFetch(`/admin/categories/${id}`, { method: 'DELETE' });
+        showToast('Category deleted.');
+        loadGlobalLists();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
   };
 
   const handleDeleteSub = async (id) => {
-    if (!window.confirm('Delete this subcategory?')) return;
-    try {
-      await apiFetch(`/admin/subcategories/${id}`, { method: 'DELETE' });
-      showToast('Sub-category deleted.');
-      loadGlobalLists();
-    } catch (err) {
-      showToast(err.message, 'danger');
-    }
+    showConfirm('Delete this subcategory?', async () => {
+      try {
+        await apiFetch(`/admin/subcategories/${id}`, { method: 'DELETE' });
+        showToast('Sub-category deleted.');
+        loadGlobalLists();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
   };
 
   const handleDeleteSf = async (id) => {
-    if (!window.confirm('Delete this specialized field?')) return;
-    try {
-      await apiFetch(`/admin/specialized-fields/${id}`, { method: 'DELETE' });
-      showToast('Specialized field deleted.');
-      loadGlobalLists();
-    } catch (err) {
-      showToast(err.message, 'danger');
-    }
+    showConfirm('Delete this specialized field?', async () => {
+      try {
+        await apiFetch(`/admin/specialized-fields/${id}`, { method: 'DELETE' });
+        showToast('Specialized field deleted.');
+        loadGlobalLists();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
   };
 
   return (
@@ -1986,68 +2057,79 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {categories.map(cat => {
                   const nested = subcategories.filter(s => s.category_id === cat._id || s.category_id?._id === cat._id);
+                  const isExpanded = expandedCatId === cat._id;
                   return (
-                    <div key={cat._id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: 'hsl(var(--bg-dark) / 0.5)', padding: '12px 16px', borderRadius: 'var(--border-radius-lg)', border: '1px solid hsl(var(--border-color))' }}>
-                      <div className="flex-between">
+                    <div key={cat._id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: 'hsl(var(--bg-dark) / 0.5)', padding: '12px 16px', borderRadius: 'var(--border-radius-lg)', border: '1px solid hsl(var(--border-color))', transition: 'var(--transition-smooth)' }}>
+                      <div className="flex-between" style={{ cursor: 'pointer' }} onClick={() => setExpandedCatId(isExpanded ? null : cat._id)}>
                         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                          <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', width: '12px', display: 'inline-block' }}>
+                            {isExpanded ? '▼' : '▶'}
+                          </span>
                           <span className="cat-pill" style={{ backgroundColor: cat.color, width: '16px', height: '16px' }}></span>
                           <span style={{ fontSize: '18px' }}>{cat.icon}</span>
-                          <span style={{ fontWeight: '700', fontSize: '15px' }}>{cat.name}</span>
+                          <span style={{ fontWeight: '700', fontSize: '15px', color: isExpanded ? 'hsl(var(--primary))' : 'inherit' }}>{cat.name}</span>
                           <span style={{ fontSize: '10px', color: 'hsl(var(--text-muted))' }}>({nested.length} subs)</span>
                         </div>
-                        <div style={{ display: 'flex', gap: '4px' }}>
+                        <div style={{ display: 'flex', gap: '4px' }} onClick={(e) => e.stopPropagation()}>
                           <button className="btn btn-secondary btn-sm" style={{ padding: '4px 8px' }} onClick={() => {
                             setEditingCatId(cat._id);
                             setCatForm({ ...cat });
+                            scrollToForm('category-form-container');
                           }}>Edit</button>
                           <button className="btn btn-danger btn-sm" style={{ padding: '4px 8px' }} onClick={() => handleDeleteCat(cat._id)}>Del</button>
                         </div>
                       </div>
                       
                       {/* Nested subcategories */}
-                      {nested.map(sub => {
-                        const fields = specializedFields.filter(f => f.subcategory_id === sub._id || f.subcategory_id?._id === sub._id);
-                        return (
-                          <div key={sub._id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: 'hsl(var(--bg-card) / 0.3)', borderLeft: '2px solid var(--primary)', marginLeft: '16px', borderRadius: 'var(--border-radius-sm)', marginTop: '4px', padding: '8px 12px' }}>
-                            <div className="flex-between" style={{ fontSize: '13px' }}>
-                              <span style={{ fontWeight: '600' }}>{sub.name}</span>
-                              <div style={{ display: 'flex', gap: '4px' }}>
-                                <button className="btn btn-secondary btn-sm" style={{ padding: '2px 6px', fontSize: '10px' }} onClick={() => {
-                                  setEditingSubId(sub._id);
-                                  setSubForm({ category_id: sub.category_id?._id || sub.category_id, name: sub.name, sort_order: sub.sort_order });
-                                }}>Edit</button>
-                                <button className="btn btn-danger btn-sm" style={{ padding: '2px 6px', fontSize: '10px' }} onClick={() => handleDeleteSub(sub._id)}>Del</button>
-                              </div>
-                            </div>
-                            
-                            {/* Level 3 Specialized Fields */}
-                            {fields.length > 0 && (
-                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px', paddingLeft: '8px' }}>
-                                {fields.map(f => (
-                                  <div key={f._id} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'hsl(var(--bg-dark) / 0.8)', border: '1px solid hsl(var(--border-color))', borderRadius: '4px', padding: '2px 8px', fontSize: '11px' }}>
-                                    <span>{f.name}</span>
-                                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                                      <button style={{ background: 'none', border: 'none', color: 'hsl(var(--text-secondary))', cursor: 'pointer', padding: 0 }} onClick={(e) => {
-                                        e.stopPropagation();
-                                        setEditingSfId(f._id);
-                                        setSfForm({ subcategory_id: f.subcategory_id?._id || f.subcategory_id, name: f.name, sort_order: f.sort_order });
-                                      }} title="Edit Specialized Field">
-                                        <Edit size={10} />
-                                      </button>
-                                      <button style={{ background: 'none', border: 'none', color: 'hsl(var(--danger))', cursor: 'pointer', padding: 0 }} onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteSf(f._id);
-                                      }} title="Delete Specialized Field">
-                                        <X size={10} />
-                                      </button>
-                                    </div>
+                      {isExpanded && (
+                        <div className="animate-fade" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '8px' }}>
+                          {nested.map(sub => {
+                            const fields = specializedFields.filter(f => f.subcategory_id === sub._id || f.subcategory_id?._id === sub._id);
+                            return (
+                              <div key={sub._id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: 'hsl(var(--bg-card) / 0.3)', borderLeft: '2px solid var(--primary)', marginLeft: '16px', borderRadius: 'var(--border-radius-sm)', marginTop: '4px', padding: '8px 12px' }}>
+                                <div className="flex-between" style={{ fontSize: '13px' }}>
+                                  <span style={{ fontWeight: '600' }}>{sub.name}</span>
+                                  <div style={{ display: 'flex', gap: '4px' }}>
+                                    <button className="btn btn-secondary btn-sm" style={{ padding: '2px 6px', fontSize: '10px' }} onClick={() => {
+                                      setEditingSubId(sub._id);
+                                      setSubForm({ category_id: sub.category_id?._id || sub.category_id, name: sub.name, sort_order: sub.sort_order });
+                                      scrollToForm('subcategory-form-container');
+                                    }}>Edit</button>
+                                    <button className="btn btn-danger btn-sm" style={{ padding: '2px 6px', fontSize: '10px' }} onClick={() => handleDeleteSub(sub._id)}>Del</button>
                                   </div>
-                                ))}
+                                </div>
+                                
+                                {/* Level 3 Specialized Fields */}
+                                {fields.length > 0 && (
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px', paddingLeft: '8px' }}>
+                                    {fields.map(f => (
+                                      <div key={f._id} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'hsl(var(--bg-dark) / 0.8)', border: '1px solid hsl(var(--border-color))', borderRadius: '4px', padding: '2px 8px', fontSize: '11px' }}>
+                                        <span>{f.name}</span>
+                                        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                          <button style={{ background: 'none', border: 'none', color: 'hsl(var(--text-secondary))', cursor: 'pointer', padding: 0 }} onClick={(e) => {
+                                            e.stopPropagation();
+                                            setEditingSfId(f._id);
+                                            setSfForm({ subcategory_id: f.subcategory_id?._id || f.subcategory_id, name: f.name, sort_order: f.sort_order });
+                                            scrollToForm('sf-form-container');
+                                          }} title="Edit Specialized Field">
+                                            <Edit size={10} />
+                                          </button>
+                                          <button style={{ background: 'none', border: 'none', color: 'hsl(var(--danger))', cursor: 'pointer', padding: 0 }} onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteSf(f._id);
+                                          }} title="Delete Specialized Field">
+                                            <X size={10} />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -2059,9 +2141,15 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
         {/* Right Side: Add/Edit Forms */}
         <div className="col-span-5" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Category Form */}
-          <div className="glass-box">
+          <div id="category-form-container" className={`glass-box ${editingCatId ? 'editing-active-box' : ''}`}>
             <div className="flex-between" style={{ marginBottom: '20px' }}>
-              <h2>{editingCatId ? 'Edit Category' : 'Add Category'}</h2>
+              <h2>
+                {editingCatId ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    ✏️ Edit Category <span className="editing-badge">Active</span>
+                  </span>
+                ) : 'Add Category'}
+              </h2>
               {editingCatId && (
                 <button className="btn btn-secondary btn-sm" onClick={() => {
                   setEditingCatId(null);
@@ -2122,9 +2210,15 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
           </div>
 
           {/* Subcategory Form */}
-          <div className="glass-box" style={{ marginBottom: '24px' }}>
+          <div id="subcategory-form-container" className={`glass-box ${editingSubId ? 'editing-active-box' : ''}`} style={{ marginBottom: '24px' }}>
             <div className="flex-between" style={{ marginBottom: '20px' }}>
-              <h2>{editingSubId ? 'Edit Sub-category' : 'Add Sub-category'}</h2>
+              <h2>
+                {editingSubId ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    ✏️ Edit Sub-category <span className="editing-badge">Active</span>
+                  </span>
+                ) : 'Add Sub-category'}
+              </h2>
               {editingSubId && (
                 <button className="btn btn-secondary btn-sm" onClick={() => {
                   setEditingSubId(null);
@@ -2170,9 +2264,15 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
           </div>
 
           {/* Specialized Field Form */}
-          <div className="glass-box">
+          <div id="sf-form-container" className={`glass-box ${editingSfId ? 'editing-active-box' : ''}`}>
             <div className="flex-between" style={{ marginBottom: '20px' }}>
-              <h2>{editingSfId ? 'Edit Specialized Field' : 'Add Specialized Field'}</h2>
+              <h2>
+                {editingSfId ? (
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    ✏️ Edit Specialized Field <span className="editing-badge">Active</span>
+                  </span>
+                ) : 'Add Specialized Field'}
+              </h2>
               {editingSfId && (
                 <button className="btn btn-secondary btn-sm" onClick={() => {
                   setEditingSfId(null);
@@ -2231,7 +2331,7 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
 }
 
 // ── 5. RESOURCES VIEW ────────────────────────────────────────────────
-function ResourcesView({ apiFetch, showToast, categories, subcategories, specializedFields }) {
+function ResourcesView({ apiFetch, showToast, showConfirm, categories, subcategories, specializedFields }) {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingRes, setEditingRes] = useState(null); // null = listing, else object
@@ -2304,6 +2404,12 @@ function ResourcesView({ apiFetch, showToast, categories, subcategories, special
         file_url: fileUrl
       };
 
+      // Sanitize empty ObjectId fields to null to prevent MongoDB casting errors
+      if (submissionData.category_id === '') submissionData.category_id = null;
+      if (submissionData.subcategory_id === '') submissionData.subcategory_id = null;
+      if (submissionData.specialized_field_id === '') submissionData.specialized_field_id = null;
+      if (submissionData.episode_ref === '') submissionData.episode_ref = null;
+
       if (formData._id) {
         await apiFetch(`/admin/resources/${formData._id}`, {
           method: 'PUT',
@@ -2327,14 +2433,15 @@ function ResourcesView({ apiFetch, showToast, categories, subcategories, special
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this resource permanently?')) return;
-    try {
-      await apiFetch(`/admin/resources/${id}`, { method: 'DELETE' });
-      showToast('Resource deleted.');
-      loadResources();
-    } catch (err) {
-      showToast(err.message, 'danger');
-    }
+    showConfirm('Delete this resource permanently?', async () => {
+      try {
+        await apiFetch(`/admin/resources/${id}`, { method: 'DELETE' });
+        showToast('Resource deleted.');
+        loadResources();
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
   };
 
   const getFilteredSubs = () => {
