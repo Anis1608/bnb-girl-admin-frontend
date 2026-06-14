@@ -14,6 +14,7 @@ export default function App() {
   const [username, setUsername] = useState(localStorage.getItem('bbg_username') || '');
   const [toast, setToast] = useState(null);
   const [confirmConfig, setConfirmConfig] = useState(null);
+  const [selectedSub, setSelectedSub] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -320,6 +321,93 @@ export default function App() {
         </div>
       )}
 
+      {/* Details View Modal */}
+      {selectedSub && (
+        <div className="confirm-overlay" onClick={() => setSelectedSub(null)}>
+          <div className="confirm-card" style={{ maxWidth: '640px', width: '100%', maxHeight: '85vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-header" style={{ justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '24px' }}>📋</span>
+                <div className="confirm-title" style={{ margin: 0, fontSize: '18px' }}>Submission Details</div>
+              </div>
+              <button onClick={() => setSelectedSub(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'hsl(var(--text-secondary))' }}>
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="confirm-body" style={{ textAlign: 'left', marginTop: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '8px 16px', marginBottom: '20px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '16px' }}>
+                <span style={{ color: 'hsl(var(--text-muted))', fontWeight: '600' }}>Form Type:</span>
+                <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{selectedSub.form_type.replace('_', ' ')}</span>
+                
+                <span style={{ color: 'hsl(var(--text-muted))', fontWeight: '600' }}>Submitted:</span>
+                <span>{new Date(selectedSub.created_at).toLocaleString()}</span>
+                
+                <span style={{ color: 'hsl(var(--text-muted))', fontWeight: '600' }}>IP Address:</span>
+                <span>{selectedSub.ip_address || 'N/A'}</span>
+                
+                <span style={{ color: 'hsl(var(--text-muted))', fontWeight: '600' }}>Status:</span>
+                <span className={`badge badge-${selectedSub.status}`} style={{ width: 'fit-content', display: 'inline-block' }}>{selectedSub.status}</span>
+              </div>
+
+              <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '12px', color: 'hsl(var(--text-secondary))' }}>Submitted Data:</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
+                {Object.entries(selectedSub.data || {}).map(([key, val]) => {
+                  if (key === 'answers') return null;
+                  if (key === 'results') return null;
+                  
+                  return (
+                    <div key={key} style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.02)', paddingBottom: '6px' }}>
+                      <span style={{ color: 'hsl(var(--text-muted))', fontWeight: '600', textTransform: 'capitalize' }}>
+                        {key.replace('_', ' ')}:
+                      </span>
+                      <span style={{ wordBreak: 'break-word', color: '#fff' }}>
+                        {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val)}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                {/* Selected Answers for Quiz */}
+                {selectedSub.form_type === 'quiz' && selectedSub.data?.answers && (
+                  <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '16px' }}>
+                    <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '10px', color: '#D8B4FE' }}>Selected Answers (18 Questions):</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      {Object.entries(selectedSub.data.answers).map(([qId, ansVal]) => {
+                        return (
+                          <div key={qId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', borderBottom: '1px dashed rgba(255,255,255,0.05)', paddingBottom: '6px' }}>
+                            <span style={{ color: 'hsl(var(--text-muted))', fontWeight: '600', width: '120px', flexShrink: 0 }}>{qId.toUpperCase()}:</span>
+                            <span style={{ color: '#fff' }}>{String(ansVal)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Ranked Career Recommendations */}
+                {selectedSub.form_type === 'quiz' && selectedSub.data?.results && (
+                  <div style={{ marginTop: '16px' }}>
+                    <h4 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '8px', color: '#F97316' }}>Ranked Careers:</h4>
+                    <ol style={{ paddingLeft: '20px', margin: 0, fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {selectedSub.data.results.map((cKey, idx) => (
+                        <li key={cKey} style={{ color: idx === 0 ? '#fff' : 'hsl(var(--text-muted))', fontWeight: idx === 0 ? 'bold' : 'normal' }}>
+                          {cKey.replace('_', ' ').toUpperCase()} {idx === 0 ? '🏆 (Primary Match)' : ''}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="confirm-actions" style={{ marginTop: '24px', justifyContent: 'flex-end' }}>
+              <button className="btn btn-secondary" onClick={() => setSelectedSub(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Overlay for Mobile */}
       <div className={`sidebar-overlay ${isMobileMenuOpen ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
 
@@ -403,7 +491,7 @@ export default function App() {
               <Route path="/mentors" element={<MentorsView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} episodes={episodes} />} />
               <Route path="/categories" element={<CategoriesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
               <Route path="/resources" element={<ResourcesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />} />
-              <Route path="/submissions" element={<SubmissionsView apiFetch={apiFetch} showToast={showToast} />} />
+              <Route path="/submissions" element={<SubmissionsView apiFetch={apiFetch} showToast={showToast} onViewDetails={setSelectedSub} />} />
               <Route path="/stats" element={<StatsView apiFetch={apiFetch} showToast={showToast} />} />
               <Route path="/cms" element={<CmsView apiFetch={apiFetch} showToast={showToast} />} />
               <Route path="/settings" element={<SettingsView apiFetch={apiFetch} showToast={showToast} />} />
@@ -2697,7 +2785,7 @@ function ResourcesView({ apiFetch, showToast, showConfirm, categories, subcatego
 }
 
 // ── 6. SUBMISSIONS VIEW ──────────────────────────────────────────────
-function SubmissionsView({ apiFetch, showToast }) {
+function SubmissionsView({ apiFetch, showToast, onViewDetails }) {
   const [activeTab, setActiveTab] = useState('ask_guest');
   const [list, setList] = useState([]);
   const [counts, setCounts] = useState({});
@@ -2890,7 +2978,32 @@ function SubmissionsView({ apiFetch, showToast }) {
                         {new Date(row.created_at).toLocaleString()}
                       </td>
                       {getCols(activeTab).map(c => {
-                        const cellVal = d[c] || '';
+                        let cellVal = d[c];
+                        if (activeTab === 'quiz') {
+                          if (c === 'name' && !cellVal) {
+                            cellVal = `${d.firstName || ''} ${d.lastName || ''}`.trim();
+                          }
+                          if (c === 'result' && !cellVal) {
+                            const careerNames = {
+                              entrepreneur: 'Entrepreneur & Founder',
+                              creative_leader: 'Creative Director & Brand Builder',
+                              health_leader: 'Health & Wellness Leader',
+                              tech_innovator: 'Tech Innovator & Digital Builder',
+                              changemaker: 'Social Changemaker & Advocate',
+                              finance_strategist: 'Finance & Investment Strategist',
+                              educator_coach: 'Educator, Coach & People Developer',
+                              media_journalist: 'Journalist & Media Personality'
+                            };
+                            const topResult = d.results && d.results[0];
+                            cellVal = careerNames[topResult] || topResult || '';
+                          }
+                          if (c === 'match_pct' && !cellVal) {
+                            cellVal = d.results ? '100%' : '';
+                          }
+                        }
+                        if (cellVal === undefined || cellVal === null) {
+                          cellVal = '';
+                        }
                         return (
                           <td key={c} style={{ maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={String(cellVal)}>
                             {typeof cellVal === 'object' ? JSON.stringify(cellVal) : String(cellVal)}
@@ -2901,16 +3014,26 @@ function SubmissionsView({ apiFetch, showToast }) {
                         <span className={`badge badge-${row.status}`}>{row.status}</span>
                       </td>
                       <td>
-                        <select 
-                          className="select-field" style={{ padding: '4px 8px', fontSize: '12px', width: '110px' }}
-                          value={row.status}
-                          onChange={(e) => handleStatusUpdate(row._id, e.target.value)}
-                        >
-                          <option value="new">New</option>
-                          <option value="reviewed">Reviewed</option>
-                          <option value="actioned">Actioned</option>
-                          <option value="spam">Spam</option>
-                        </select>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <select 
+                            className="select-field" style={{ padding: '4px 8px', fontSize: '12px', width: '90px' }}
+                            value={row.status}
+                            onChange={(e) => handleStatusUpdate(row._id, e.target.value)}
+                          >
+                            <option value="new">New</option>
+                            <option value="reviewed">Reviewed</option>
+                            <option value="actioned">Actioned</option>
+                            <option value="spam">Spam</option>
+                          </select>
+                          <button 
+                            className="btn btn-secondary btn-sm" 
+                            style={{ padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                            title="View Details"
+                            onClick={() => onViewDetails(row)}
+                          >
+                            <Eye size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
