@@ -10,12 +10,13 @@ const API_BASE = 'https://bnb-girl-backend.onrender.com/api';
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('bbg_token') || '');
   const [username, setUsername] = useState(localStorage.getItem('bbg_username') || '');
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeView, setActiveView] = useState(localStorage.getItem('bbg_active_view') || 'dashboard');
   const [toast, setToast] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleViewChange = (view) => {
     setActiveView(view);
+    localStorage.setItem('bbg_active_view', view);
     setIsMobileMenuOpen(false);
   };
 
@@ -123,6 +124,7 @@ export default function App() {
   const handleLogout = () => {
     localStorage.removeItem('bbg_token');
     localStorage.removeItem('bbg_username');
+    localStorage.removeItem('bbg_active_view');
     setToken('');
     setUsername('');
     setActiveView('dashboard');
