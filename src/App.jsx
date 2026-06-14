@@ -342,6 +342,7 @@ function DashboardView({ apiFetch, setView, showToast }) {
   const [dashboardData, setDashboardData] = useState(null);
   const [recentSubs, setRecentSubs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const loadDashboard = async () => {
     try {
@@ -354,6 +355,23 @@ function DashboardView({ apiFetch, setView, showToast }) {
       console.error('Error loading dashboard stats', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const data = await apiFetch('/admin/dashboard-stats');
+      setDashboardData(data);
+
+      const subsData = await apiFetch('/admin/submissions?page=1');
+      setRecentSubs(subsData.rows.slice(0, 5));
+      if (showToast) showToast('Dashboard metrics refreshed successfully!');
+    } catch (err) {
+      console.error('Error refreshing dashboard stats', err);
+      if (showToast) showToast('Failed to refresh dashboard metrics.', 'danger');
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -463,7 +481,17 @@ function DashboardView({ apiFetch, setView, showToast }) {
           <p className="subtitle">Welcome to Bold & Brilliant Girls platform manager. Here's a live check on analytics.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn btn-secondary btn-sm" onClick={loadDashboard}>🔄 Refresh Data</button>
+          <button 
+            className="btn btn-secondary btn-sm" 
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            style={{ 
+              opacity: isRefreshing ? 0.6 : 1, 
+              cursor: isRefreshing ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isRefreshing ? '⏳ Refreshing...' : '🔄 Refresh Data'}
+          </button>
         </div>
       </div>
 
