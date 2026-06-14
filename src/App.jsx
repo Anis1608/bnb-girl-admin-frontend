@@ -865,19 +865,19 @@ function DashboardView({ apiFetch, setView, showToast }) {
                 {recentSubs.map((sub, idx) => {
                   const lbl = formsLabels[sub.form_type] || { label: sub.form_type, icon: '📄' };
                   return (
-                    <div key={idx} className="flex-between" style={{ padding: '14px 18px', background: 'hsl(var(--bg-dark))', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))' }}>
-                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <span style={{ fontSize: '24px' }}>{lbl.icon}</span>
-                        <div>
-                          <div style={{ fontSize: '14px', fontWeight: '700', color: 'hsl(var(--text-primary))' }}>{lbl.label}</div>
-                          <span style={{ fontSize: '12px', color: 'hsl(var(--text-muted))' }}>
+                    <div key={idx} className="recent-sub-row">
+                      <div className="recent-sub-info">
+                        <span style={{ fontSize: '24px', flexShrink: 0 }}>{lbl.icon}</span>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: 'hsl(var(--text-primary))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lbl.label}</div>
+                          <div style={{ fontSize: '12px', color: 'hsl(var(--text-muted))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={sub.data?.email || sub.data?.name || 'Anonymous'}>
                             {sub.data?.email || sub.data?.name || 'Anonymous'}
-                          </span>
+                          </div>
                         </div>
                       </div>
                       
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                        <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>
+                      <div className="recent-sub-meta">
+                        <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', whiteSpace: 'nowrap' }}>
                           {new Date(sub.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                         </span>
                         <select 
