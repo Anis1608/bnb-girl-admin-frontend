@@ -143,6 +143,8 @@ export default function App() {
     localStorage.removeItem('bbg_active_view');
     setToken('');
     setUsername('');
+    globalDashboardCache = null;
+    globalRecentSubsCache = [];
     navigate('/login', { replace: true });
     showToast('Logged out successfully.', 'info');
   };
@@ -337,20 +339,31 @@ async function handleFileUpload(file, apiFetch, showToast) {
   return data.url;
 }
 
+// Global memory caches for dashboard views to prevent redundant network fetches on tab-switching
+let globalDashboardCache = null;
+let globalRecentSubsCache = [];
+
 // ── 1. DASHBOARD VIEW ────────────────────────────────────────────────
 function DashboardView({ apiFetch, setView, showToast }) {
-  const [dashboardData, setDashboardData] = useState(null);
-  const [recentSubs, setRecentSubs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(globalDashboardCache);
+  const [recentSubs, setRecentSubs] = useState(globalRecentSubsCache);
+  const [loading, setLoading] = useState(!globalDashboardCache);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (force = false) => {
+    if (globalDashboardCache && !force) {
+      setLoading(false);
+      return;
+    }
     try {
+      if (!globalDashboardCache) setLoading(true);
       const data = await apiFetch('/admin/dashboard-stats');
+      globalDashboardCache = data;
       setDashboardData(data);
 
       const subsData = await apiFetch('/admin/submissions?page=1');
-      setRecentSubs(subsData.rows.slice(0, 5));
+      globalRecentSubsCache = subsData.rows.slice(0, 5);
+      setRecentSubs(globalRecentSubsCache);
     } catch (err) {
       console.error('Error loading dashboard stats', err);
     } finally {
@@ -362,7 +375,6 @@ function DashboardView({ apiFetch, setView, showToast }) {
     setIsRefreshing(true);
     try {
       const data = await apiFetch('/admin/dashboard-stats');
-      setDashboardData(data);
 
       const subsData = await apiFetch('/admin/submissions?page=1');
       setRecentSubs(subsData.rows.slice(0, 5));
@@ -389,6 +401,10 @@ function DashboardView({ apiFetch, setView, showToast }) {
         sub._id === id ? { ...sub, status: newStatus } : sub
       )
     );
+    // Sync global cache too
+    globalRecentSubsCache = globalRecentSubsCache.map(sub => 
+      sub._id === id ? { ...sub, status: newStatus } : sub
+    );
 
     try {
       await apiFetch(`/admin/submissions/${id}`, {
@@ -400,10 +416,12 @@ function DashboardView({ apiFetch, setView, showToast }) {
       
       // 2. Fetch fresh dashboard statistics to update the backlog bar and count labels
       const data = await apiFetch('/admin/dashboard-stats');
+      globalDashboardCache = data;
       setDashboardData(data);
     } catch (err) {
       // Rollback to original state on error
       setRecentSubs(originalSubs);
+      globalRecentSubsCache = originalSubs;
       if (showToast) showToast('Failed to update submission status.', 'danger');
       console.error(err);
     }
