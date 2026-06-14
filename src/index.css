@@ -750,3 +750,247 @@ input:checked + .toggle-slider:before {
     width: 100%;
   }
 }
+
+/* ── PREMIUM DASHBOARD STATS STYLES ───────────────────────────────── */
+
+/* Metric Card breakdown pills */
+.card-breakdown {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid hsl(var(--border-color) / 0.5);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sub-pill {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: var(--border-radius-sm);
+  background-color: hsl(var(--bg-dark));
+  border: 1px solid hsl(var(--border-color));
+  color: hsl(var(--text-secondary));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sub-pill-highlight {
+  color: hsl(var(--primary-hsl));
+  font-weight: 700;
+}
+
+/* Stacked Progress Bar (Submissions backlogs) */
+.stacked-progress-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 99px;
+  overflow: hidden;
+  background-color: hsl(var(--bg-dark));
+  border: 1px solid hsl(var(--border-color));
+  margin: 16px 0;
+  width: 100%;
+}
+
+.stacked-segment {
+  height: 100%;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stacked-segment-new { background-color: hsl(var(--new)); }
+.stacked-segment-reviewed { background-color: hsl(var(--info)); }
+.stacked-segment-actioned { background-color: hsl(var(--success)); }
+.stacked-segment-spam { background-color: hsl(var(--danger)); }
+
+.status-legend-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.legend-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.legend-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: hsl(var(--text-secondary));
+  font-weight: 500;
+}
+
+.legend-value {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+/* Progress rows for form distribution */
+.progress-row {
+  margin-bottom: 16px;
+}
+
+.progress-row:last-child {
+  margin-bottom: 0;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.progress-bar-track {
+  height: 6px;
+  background-color: hsl(var(--bg-dark));
+  border: 1px solid hsl(var(--border-color));
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 7-Day Trend Chart */
+.trend-chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 130px;
+  padding: 16px 8px 4px 8px;
+  background-color: hsl(var(--bg-dark));
+  border-radius: var(--border-radius-md);
+  border: 1px solid hsl(var(--border-color));
+  margin-top: 16px;
+  gap: 6px;
+}
+
+.trend-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.trend-bar {
+  width: 100%;
+  max-width: 24px;
+  background: var(--theme-gradient);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  min-height: 3px;
+  cursor: pointer;
+}
+
+.trend-bar:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 10px hsl(var(--primary-hsl) / 0.4);
+}
+
+.trend-bar-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, -4px);
+  background-color: hsl(var(--bg-surface));
+  border: 1px solid var(--primary);
+  color: hsl(var(--text-primary));
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  box-shadow: var(--box-shadow-premium);
+  z-index: 10;
+}
+
+.trend-bar:hover .trend-bar-tooltip {
+  opacity: 1;
+}
+
+.trend-label {
+  font-size: 9px;
+  color: hsl(var(--text-muted));
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Category Content Distribution Matrix */
+.matrix-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid hsl(var(--border-color) / 0.5);
+  font-size: 13px;
+}
+
+.matrix-row:last-child {
+  border-bottom: none;
+}
+
+.matrix-cat-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.matrix-stats {
+  display: flex;
+  gap: 12px;
+}
+
+.matrix-stat-item {
+  font-size: 12px;
+  color: hsl(var(--text-secondary));
+}
+
+.matrix-stat-num {
+  font-weight: 700;
+  color: hsl(var(--text-primary));
+  margin-left: 2px;
+}
+
+/* Inline status dropdown selector */
+.status-select-inline {
+  background-color: hsl(var(--bg-dark));
+  border: 1px solid hsl(var(--border-color));
+  border-radius: var(--border-radius-sm);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition-smooth);
+}
+
+.status-select-inline:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.status-select-inline.status-new { color: hsl(var(--new)); border-color: hsl(var(--new) / 0.4); }
+.status-select-inline.status-reviewed { color: hsl(var(--info)); border-color: hsl(var(--info) / 0.4); }
+.status-select-inline.status-actioned { color: hsl(var(--success)); border-color: hsl(var(--success) / 0.4); }
+.status-select-inline.status-spam { color: hsl(var(--danger)); border-color: hsl(var(--danger) / 0.4); }
+
