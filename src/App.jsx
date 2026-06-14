@@ -589,15 +589,15 @@ function DashboardView({ apiFetch, setView, showToast }) {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid-cols-4" style={{ marginBottom: '32px' }}>
+      <div className="grid-cols-4" style={{ marginBottom: '24px' }}>
         {metricCards.map((card, i) => (
-          <div key={i} className="glass-box hoverable">
-            <div className="flex-between" style={{ marginBottom: '12px' }}>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: 'hsl(var(--text-secondary))', textTransform: 'uppercase' }}>{card.title}</span>
-              <span style={{ fontSize: '24px' }}>{card.icon}</span>
+          <div key={i} className="glass-box hoverable metric-card">
+            <div className="flex-between" style={{ marginBottom: '8px' }}>
+              <span style={{ fontSize: '11px', fontWeight: '700', color: 'hsl(var(--text-secondary))', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{card.title}</span>
+              <span style={{ fontSize: '20px' }}>{card.icon}</span>
             </div>
-            <div style={{ fontSize: '36px', fontFamily: 'var(--font-display)', fontWeight: '800', marginBottom: '4px' }}>{card.value}</div>
-            <span style={{ fontSize: '12px', color: 'hsl(var(--text-muted))' }}>{card.desc}</span>
+            <div style={{ fontSize: '30px', fontFamily: 'var(--font-display)', fontWeight: '800', marginBottom: '2px', lineHeight: '1.1' }}>{card.value}</div>
+            <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>{card.desc}</span>
             {card.breakdowns && (
               <div className="card-breakdown">
                 {card.breakdowns.map((b, idx) => (
