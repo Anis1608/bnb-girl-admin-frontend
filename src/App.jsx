@@ -12,6 +12,12 @@ export default function App() {
   const [username, setUsername] = useState(localStorage.getItem('bbg_username') || '');
   const [activeView, setActiveView] = useState('dashboard');
   const [toast, setToast] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleViewChange = (view) => {
+    setActiveView(view);
+    setIsMobileMenuOpen(false);
+  };
 
   // Login Form State
   const [loginUser, setLoginUser] = useState('');
@@ -190,47 +196,63 @@ export default function App() {
         </div>
       )}
 
+      {/* Sidebar Overlay for Mobile */}
+      <div className={`sidebar-overlay ${isMobileMenuOpen ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
+
+      {/* Mobile Top Header */}
+      <div className="mobile-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img src="https://bnbgirl.com/wp-content/uploads/2026/03/cropped-logo-BjMcg-i3__2___1_-removebg-preview-192x192.png" alt="BBG Logo" style={{ height: '32px', width: '32px', objectFit: 'contain' }} />
+          <span className="brand-title" style={{ fontSize: '18px' }}>BBG Platform</span>
+        </div>
+        <button className={`hamburger-btn ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
       {/* Sidebar Navigation */}
-      <div className="sidebar">
+      <div className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="sidebar-brand" style={{ padding: '0 20px', gap: '8px' }}>
           <img src="https://bnbgirl.com/wp-content/uploads/2026/03/cropped-logo-BjMcg-i3__2___1_-removebg-preview-192x192.png" alt="BBG Logo" style={{ height: '36px', width: '36px', objectFit: 'contain', filter: 'drop-shadow(0 2px 6px rgba(147,51,234,0.3))' }} />
           <span className="brand-title">BBG Platform</span>
         </div>
         
         <div className="sidebar-menu">
-          <div className={`menu-item ${activeView === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveView('dashboard')}>
+          <div className={`menu-item ${activeView === 'dashboard' ? 'active' : ''}`} onClick={() => handleViewChange('dashboard')}>
             <LayoutDashboard size={18} />
             <span>Dashboard</span>
           </div>
-          <div className={`menu-item ${activeView === 'episodes' ? 'active' : ''}`} onClick={() => setActiveView('episodes')}>
+          <div className={`menu-item ${activeView === 'episodes' ? 'active' : ''}`} onClick={() => handleViewChange('episodes')}>
             <Mic size={18} />
             <span>Episodes</span>
           </div>
-          <div className={`menu-item ${activeView === 'mentors' ? 'active' : ''}`} onClick={() => setActiveView('mentors')}>
+          <div className={`menu-item ${activeView === 'mentors' ? 'active' : ''}`} onClick={() => handleViewChange('mentors')}>
             <Users size={18} />
             <span>Mentors</span>
           </div>
-          <div className={`menu-item ${activeView === 'categories' ? 'active' : ''}`} onClick={() => setActiveView('categories')}>
+          <div className={`menu-item ${activeView === 'categories' ? 'active' : ''}`} onClick={() => handleViewChange('categories')}>
             <FolderTree size={18} />
             <span>Categories</span>
           </div>
-          <div className={`menu-item ${activeView === 'resources' ? 'active' : ''}`} onClick={() => setActiveView('resources')}>
+          <div className={`menu-item ${activeView === 'resources' ? 'active' : ''}`} onClick={() => handleViewChange('resources')}>
             <BookOpen size={18} />
             <span>Resources</span>
           </div>
-          <div className={`menu-item ${activeView === 'submissions' ? 'active' : ''}`} onClick={() => setActiveView('submissions')}>
+          <div className={`menu-item ${activeView === 'submissions' ? 'active' : ''}`} onClick={() => handleViewChange('submissions')}>
             <Inbox size={18} />
             <span>Submissions</span>
           </div>
-          <div className={`menu-item ${activeView === 'stats' ? 'active' : ''}`} onClick={() => setActiveView('stats')}>
+          <div className={`menu-item ${activeView === 'stats' ? 'active' : ''}`} onClick={() => handleViewChange('stats')}>
             <BarChart3 size={18} />
             <span>Stats Manager</span>
           </div>
-          <div className={`menu-item ${activeView === 'cms' ? 'active' : ''}`} onClick={() => setActiveView('cms')}>
+          <div className={`menu-item ${activeView === 'cms' ? 'active' : ''}`} onClick={() => handleViewChange('cms')}>
             <FileText size={18} />
             <span>CMS Manager</span>
           </div>
-          <div className={`menu-item ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
+          <div className={`menu-item ${activeView === 'settings' ? 'active' : ''}`} onClick={() => handleViewChange('settings')}>
             <SettingsIcon size={18} />
             <span>Settings</span>
           </div>
@@ -263,7 +285,7 @@ export default function App() {
 
         <div className="content-area">
           <div className="animate-fade">
-            {activeView === 'dashboard' && <DashboardView apiFetch={apiFetch} setView={setActiveView} categories={categories} episodes={episodes} />}
+            {activeView === 'dashboard' && <DashboardView apiFetch={apiFetch} setView={handleViewChange} categories={categories} episodes={episodes} />}
             {activeView === 'episodes' && <EpisodesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />}
             {activeView === 'mentors' && <MentorsView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} episodes={episodes} />}
             {activeView === 'categories' && <CategoriesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />}
@@ -377,7 +399,7 @@ function DashboardView({ apiFetch, setView, categories, episodes }) {
 
       <div className="grid-cols-12">
         {/* Recent Submissions */}
-        <div style={{ gridColumn: 'span 8' }}>
+        <div className="col-span-8">
           <div className="glass-box">
             <div className="flex-between" style={{ marginBottom: '20px' }}>
               <h2>Recent Submissions</h2>
@@ -412,7 +434,7 @@ function DashboardView({ apiFetch, setView, categories, episodes }) {
         </div>
 
         {/* Quick Actions & Info */}
-        <div style={{ gridColumn: 'span 4' }}>
+        <div className="col-span-4">
           <div className="glass-box" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <h2>Quick Actions</h2>
             <button className="btn btn-secondary" style={{ justifyContent: 'flex-start' }} onClick={() => setView('episodes')}>+ Add Episode</button>
@@ -686,7 +708,7 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
       <form onSubmit={handleSubmit}>
         <div className="grid-cols-12" style={{ alignItems: 'start' }}>
           {/* Form Main Area */}
-          <div style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
             {/* Episode Details */}
             <div className="glass-box">
@@ -886,7 +908,7 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
           </div>
 
           {/* Form Sidebar Publish settings */}
-          <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="glass-box">
               <h2 style={{ marginBottom: '20px' }}>Publish Settings</h2>
               
@@ -1219,7 +1241,7 @@ function MentorsView({ apiFetch, showToast, categories, subcategories, specializ
       <form onSubmit={handleSubmit}>
         <div className="grid-cols-12" style={{ alignItems: 'start' }}>
           
-          <div style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="glass-box">
               <h2 style={{ marginBottom: '20px' }}>Mentor Details</h2>
               
@@ -1283,7 +1305,7 @@ function MentorsView({ apiFetch, showToast, categories, subcategories, specializ
             </div>
           </div>
 
-          <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="glass-box">
               <h2 style={{ marginBottom: '20px' }}>Publish Settings</h2>
 
@@ -1492,7 +1514,7 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
 
       <div className="grid-cols-12" style={{ alignItems: 'start' }}>
         {/* Left Side: Listing */}
-        <div style={{ gridColumn: 'span 7' }}>
+        <div className="col-span-7">
           <div className="glass-box">
             <h2 style={{ marginBottom: '20px' }}>Taxonomy Tree</h2>
             
@@ -1573,7 +1595,7 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
         </div>
 
         {/* Right Side: Add/Edit Forms */}
-        <div style={{ gridColumn: 'span 5', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="col-span-5" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Category Form */}
           <div className="glass-box">
             <div className="flex-between" style={{ marginBottom: '20px' }}>
@@ -1957,7 +1979,7 @@ function ResourcesView({ apiFetch, showToast, categories, subcategories, special
       <form onSubmit={handleSubmit}>
         <div className="grid-cols-12" style={{ alignItems: 'start' }}>
           
-          <div style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="glass-box">
               <h2 style={{ marginBottom: '20px' }}>Resource Details</h2>
               <div className="form-group">
@@ -2019,7 +2041,7 @@ function ResourcesView({ apiFetch, showToast, categories, subcategories, special
             </div>
           </div>
 
-          <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="glass-box">
               <h2 style={{ marginBottom: '20px' }}>Publish Settings</h2>
 
@@ -2511,7 +2533,7 @@ function SettingsView({ apiFetch, showToast }) {
       <form onSubmit={handleSave}>
         <div className="grid-cols-12" style={{ alignItems: 'start' }}>
           
-          <div style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="col-span-8" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="glass-box">
               <h2 style={{ marginBottom: '20px' }}>Email Notifications</h2>
               <div className="form-group">
@@ -2565,7 +2587,7 @@ function SettingsView({ apiFetch, showToast }) {
             </div>
           </div>
 
-          <div style={{ gridColumn: 'span 4' }}>
+          <div className="col-span-4">
             <div className="glass-box">
               <h2 style={{ marginBottom: '20px' }}>Save Changes</h2>
               <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '44px' }} disabled={saving}>
@@ -2742,7 +2764,7 @@ function CmsView({ apiFetch, showToast }) {
 
       <form onSubmit={handleSave}>
         <div className="grid-cols-12" style={{ alignItems: 'start', gap: '24px' }}>
-          <div style={{ gridColumn: 'span 8' }}>
+          <div className="col-span-8">
             <div className="glass-box">
               {activeSubTab === 'general' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -2999,7 +3021,7 @@ function CmsView({ apiFetch, showToast }) {
             </div>
           </div>
 
-          <div style={{ gridColumn: 'span 4' }}>
+          <div className="col-span-4">
             <div className="glass-box" style={{ position: 'sticky', top: '24px' }}>
               <h2 style={{ marginBottom: '20px' }}>Publishing</h2>
               <p style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginBottom: '20px' }}>Saving changes will write records to the live database, immediately updating content for all website visitors.</p>
