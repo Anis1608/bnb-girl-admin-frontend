@@ -1141,5 +1141,58 @@ input:checked + .toggle-slider:before {
   border-radius: 4px !important;
 }
 
+/* ── SECURE LOGIN STYLES ────────────────────────────────────────── */
+.input-with-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-icon-left {
+  position: absolute;
+  left: 14px;
+  color: hsl(var(--text-muted));
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-field-with-icon {
+  padding-left: 44px !important;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: hsl(var(--text-muted));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+  padding: 4px;
+}
+
+.password-toggle-btn:hover {
+  color: hsl(var(--text-primary));
+}
+
+.secure-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  color: hsl(var(--text-muted));
+  margin-top: 28px;
+  border-top: 1px solid hsl(var(--border-color) / 0.5);
+  padding-top: 16px;
+}
+
+
 
 

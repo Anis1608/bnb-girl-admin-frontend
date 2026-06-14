@@ -3,7 +3,8 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { 
   LayoutDashboard, Mic, Users, FolderTree, BookOpen, Inbox, BarChart3, 
   Settings as SettingsIcon, LogOut, Plus, Search, Download, Trash2, 
-  Edit, Save, Upload, Link, FileText, CheckCircle, AlertCircle, Info, ExternalLink, X, PlusCircle, Check
+  Edit, Save, Upload, Link, FileText, CheckCircle, AlertCircle, Info, ExternalLink, X, PlusCircle, Check,
+  Lock, User, Eye, EyeOff, ShieldCheck
 } from 'lucide-react';
 
 const API_BASE = 'https://bnb-girl-backend.onrender.com/api';
@@ -13,6 +14,7 @@ export default function App() {
   const [username, setUsername] = useState(localStorage.getItem('bbg_username') || '');
   const [toast, setToast] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -154,47 +156,110 @@ export default function App() {
     return (
       <div className="login-container">
         <div className="login-glass-card animate-scale">
-          <div className="flex-center" style={{ marginBottom: '24px' }}>
-            <img src="/logo-main.png" alt="Bold & Brilliant Girls Logo" style={{ height: '80px', objectFit: 'contain', filter: 'drop-shadow(0 4px 12px rgba(147, 51, 234, 0.45))' }} />
+          <div className="flex-center" style={{ marginBottom: '20px' }}>
+            <img 
+              src="/logo-main.png" 
+              alt="Bold & Brilliant Girls Logo" 
+              style={{ 
+                height: '74px', 
+                objectFit: 'contain', 
+                filter: 'drop-shadow(0 0 15px rgba(236, 72, 153, 0.4))' 
+              }} 
+            />
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: '900', marginBottom: '8px', background: 'var(--theme-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>BBG Platform</h1>
-          <p style={{ color: 'hsl(var(--text-secondary))', fontSize: '14px', marginBottom: '32px' }}>Bold & Brilliant Girls Admin Dashboard</p>
+          <h1 style={{ 
+            fontFamily: 'var(--font-display)', 
+            fontSize: '30px', 
+            fontWeight: '900', 
+            marginBottom: '6px', 
+            background: 'var(--theme-gradient)', 
+            WebkitBackgroundClip: 'text', 
+            WebkitTextFillColor: 'transparent' 
+          }}>
+            BBG Platform
+          </h1>
+          <p style={{ color: 'hsl(var(--text-secondary))', fontSize: '13px', marginBottom: '28px' }}>
+            Bold & Brilliant Girls Admin Dashboard
+          </p>
           
           <form onSubmit={handleLogin} style={{ textAlign: 'left' }}>
             {loginError && (
-              <div style={{ backgroundColor: 'hsl(var(--danger) / 0.15)', color: 'hsl(var(--danger))', padding: '12px', borderRadius: 'var(--border-radius-md)', fontSize: '13px', display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ 
+                backgroundColor: 'hsl(var(--danger) / 0.12)', 
+                border: '1px solid hsl(var(--danger) / 0.25)',
+                color: 'hsl(var(--danger))', 
+                padding: '12px', 
+                borderRadius: 'var(--border-radius-md)', 
+                fontSize: '13px', 
+                display: 'flex', 
+                gap: '8px', 
+                alignItems: 'center', 
+                marginBottom: '20px' 
+              }}>
                 <AlertCircle size={16} />
                 <span>{loginError}</span>
               </div>
             )}
             
             <div className="form-group">
-              <label>Username</label>
-              <input 
-                type="text" 
-                className="input-field" 
-                required 
-                value={loginUser} 
-                onChange={(e) => setLoginUser(e.target.value)} 
-                placeholder="Enter username (admin)" 
-              />
+              <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Username</label>
+              <div className="input-with-icon-wrapper">
+                <span className="input-icon-left">
+                  <User size={16} />
+                </span>
+                <input 
+                  type="text" 
+                  className="input-field input-field-with-icon" 
+                  required 
+                  value={loginUser} 
+                  onChange={(e) => setLoginUser(e.target.value)} 
+                  placeholder="Enter username" 
+                />
+              </div>
             </div>
             
-            <div className="form-group" style={{ marginBottom: '32px' }}>
-              <label>Password</label>
-              <input 
-                type="password" 
-                className="input-field" 
-                required 
-                value={loginPass} 
-                onChange={(e) => setLoginPass(e.target.value)} 
-                placeholder="Enter password (admin123)" 
-              />
+            <div className="form-group" style={{ marginBottom: '28px' }}>
+              <label style={{ fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Password</label>
+              <div className="input-with-icon-wrapper">
+                <span className="input-icon-left">
+                  <Lock size={16} />
+                </span>
+                <input 
+                  type={showPassword ? 'text' : 'password'} 
+                  className="input-field input-field-with-icon" 
+                  required 
+                  value={loginPass} 
+                  onChange={(e) => setLoginPass(e.target.value)} 
+                  placeholder="Enter password" 
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle-btn" 
+                  onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '48px' }} disabled={loggingIn}>
-              {loggingIn ? 'Logging in...' : 'Sign In'}
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              style={{ width: '100%', height: '46px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
+              disabled={loggingIn}
+            >
+              {loggingIn ? (
+                <>⏳ Logging in...</>
+              ) : (
+                <>🔒 Secure Sign In</>
+              )}
             </button>
+
+            <div className="secure-badge">
+              <ShieldCheck size={14} style={{ color: 'hsl(var(--success))' }} />
+              <span>SSL Encrypted Connection · Authorized Access Only</span>
+            </div>
           </form>
         </div>
       </div>
