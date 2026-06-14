@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Mic, Users, FolderTree, BookOpen, Inbox, BarChart3, 
   Settings as SettingsIcon, LogOut, Plus, Search, Download, Trash2, 
@@ -10,13 +11,28 @@ const API_BASE = 'https://bnb-girl-backend.onrender.com/api';
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('bbg_token') || '');
   const [username, setUsername] = useState(localStorage.getItem('bbg_username') || '');
-  const [activeView, setActiveView] = useState(localStorage.getItem('bbg_active_view') || 'dashboard');
   const [toast, setToast] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Route Guards for Authenticated / Unauthenticated sessions
+  useEffect(() => {
+    if (!token && location.pathname !== '/login') {
+      navigate('/login', { replace: true });
+    } else if (token && (location.pathname === '/login' || location.pathname === '/')) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [token, location.pathname, navigate]);
+
+  // Derived activeView based on the current URL pathname
+  const activeView = location.pathname === '/' || location.pathname === '/login'
+    ? 'dashboard'
+    : location.pathname.substring(1);
+
   const handleViewChange = (view) => {
-    setActiveView(view);
-    localStorage.setItem('bbg_active_view', view);
+    navigate(`/${view}`);
     setIsMobileMenuOpen(false);
   };
 
@@ -127,7 +143,7 @@ export default function App() {
     localStorage.removeItem('bbg_active_view');
     setToken('');
     setUsername('');
-    setActiveView('dashboard');
+    navigate('/login', { replace: true });
     showToast('Logged out successfully.', 'info');
   };
 
@@ -275,15 +291,18 @@ export default function App() {
       <div className="main-wrapper">
         <div className="content-area">
           <div className="animate-fade">
-            {activeView === 'dashboard' && <DashboardView apiFetch={apiFetch} setView={handleViewChange} categories={categories} episodes={episodes} />}
-            {activeView === 'episodes' && <EpisodesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />}
-            {activeView === 'mentors' && <MentorsView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} episodes={episodes} />}
-            {activeView === 'categories' && <CategoriesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />}
-            {activeView === 'resources' && <ResourcesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />}
-            {activeView === 'submissions' && <SubmissionsView apiFetch={apiFetch} showToast={showToast} />}
-            {activeView === 'stats' && <StatsView apiFetch={apiFetch} showToast={showToast} />}
-            {activeView === 'cms' && <CmsView apiFetch={apiFetch} showToast={showToast} />}
-            {activeView === 'settings' && <SettingsView apiFetch={apiFetch} showToast={showToast} />}
+            <Routes>
+              <Route path="/dashboard" element={<DashboardView apiFetch={apiFetch} setView={handleViewChange} categories={categories} episodes={episodes} />} />
+              <Route path="/episodes" element={<EpisodesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
+              <Route path="/mentors" element={<MentorsView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} episodes={episodes} />} />
+              <Route path="/categories" element={<CategoriesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
+              <Route path="/resources" element={<ResourcesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />} />
+              <Route path="/submissions" element={<SubmissionsView apiFetch={apiFetch} showToast={showToast} />} />
+              <Route path="/stats" element={<StatsView apiFetch={apiFetch} showToast={showToast} />} />
+              <Route path="/cms" element={<CmsView apiFetch={apiFetch} showToast={showToast} />} />
+              <Route path="/settings" element={<SettingsView apiFetch={apiFetch} showToast={showToast} />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
           </div>
         </div>
       </div>
