@@ -340,6 +340,8 @@ async function handleFileUpload(file, apiFetch, showToast) {
 // ── 1. DASHBOARD VIEW ────────────────────────────────────────────────
 function DashboardView({ apiFetch, setView, categories, episodes }) {
   const [stats, setStats] = useState({ episodes: 0, mentors: 0, community: 0, downloads: 0, countries: 0 });
+  const [realEpsCount, setRealEpsCount] = useState(0);
+  const [realMentorsCount, setRealMentorsCount] = useState(0);
   const [submissionsCount, setSubmissionsCount] = useState(0);
   const [recentSubs, setRecentSubs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -349,6 +351,12 @@ function DashboardView({ apiFetch, setView, categories, episodes }) {
       try {
         const statsData = await apiFetch('/stats');
         setStats(statsData);
+
+        const epsData = await apiFetch('/admin/episodes');
+        setRealEpsCount(epsData.length);
+
+        const mentorsData = await apiFetch('/admin/mentors');
+        setRealMentorsCount(mentorsData.length);
 
         const subsData = await apiFetch('/admin/submissions?page=1');
         setSubmissionsCount(subsData.counts.total);
@@ -367,8 +375,8 @@ function DashboardView({ apiFetch, setView, categories, episodes }) {
   }
 
   const metricCards = [
-    { title: 'Total Episodes', value: stats.episodes, desc: 'Published episodes', icon: '🎙️' },
-    { title: 'Active Mentors', value: stats.mentors, desc: 'Mentors in pool', icon: '👩‍🏫' },
+    { title: 'Total Episodes', value: realEpsCount, desc: 'Published episodes', icon: '🎙️' },
+    { title: 'Active Mentors', value: realMentorsCount, desc: 'Mentors in pool', icon: '👩‍🏫' },
     { title: 'Submissions', value: submissionsCount, desc: 'Total form signups', icon: '📩' },
     { title: 'Countries', value: stats.countries, desc: 'Global audience', icon: '🌍' },
   ];
@@ -400,7 +408,7 @@ function DashboardView({ apiFetch, setView, categories, episodes }) {
               <span style={{ fontSize: '12px', fontWeight: '700', color: 'hsl(var(--text-secondary))', textTransform: 'uppercase' }}>{card.title}</span>
               <span style={{ fontSize: '24px' }}>{card.icon}</span>
             </div>
-            <div style={{ fontSize: '32px', fontFamily: 'var(--font-display)', fontWeight: '800', marginBottom: '4px' }}>{card.value}+</div>
+            <div style={{ fontSize: '32px', fontFamily: 'var(--font-display)', fontWeight: '800', marginBottom: '4px' }}>{card.value}</div>
             <span style={{ fontSize: '12px', color: 'hsl(var(--text-muted))' }}>{card.desc}</span>
           </div>
         ))}
