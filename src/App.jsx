@@ -364,7 +364,7 @@ function DashboardView({ apiFetch, setView, categories, episodes }) {
 
   return (
     <div>
-      <div className="flex-between" style={{ marginBottom: '32px' }}>
+      <div className="page-header">
         <div>
           <h1>Dashboard</h1>
           <p className="subtitle">Welcome to Bold & Brilliant Girls platform manager.</p>
@@ -569,7 +569,7 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
   if (editingEp === null) {
     return (
       <div>
-        <div className="flex-between" style={{ marginBottom: '32px' }}>
+        <div className="page-header">
           <div>
             <h1>Episodes Manager</h1>
             <p className="subtitle">Manage podcast episodes, media URLs, and guests.</p>
@@ -688,7 +688,7 @@ function EpisodesView({ apiFetch, showToast, categories, subcategories, speciali
   // ── RENDER EDITOR / ADD NEW
   return (
     <div>
-      <div className="flex-between" style={{ marginBottom: '32px' }}>
+      <div className="page-header">
         <h1>{formData._id ? 'Edit Episode' : 'Create Episode'}</h1>
         <button className="btn btn-secondary" onClick={() => setEditingEp(null)}>Cancel</button>
       </div>
@@ -1118,7 +1118,7 @@ function MentorsView({ apiFetch, showToast, categories, subcategories, specializ
   if (editingMentor === null) {
     return (
       <div>
-        <div className="flex-between" style={{ marginBottom: '32px' }}>
+        <div className="page-header">
           <div>
             <h1>Dedicated Mentors Manager</h1>
             <p className="subtitle">Manage mentors who are NOT episode guests.</p>
@@ -1221,7 +1221,7 @@ function MentorsView({ apiFetch, showToast, categories, subcategories, specializ
   // ── RENDER EDITOR / ADD
   return (
     <div>
-      <div className="flex-between" style={{ marginBottom: '32px' }}>
+      <div className="page-header">
         <h1>{formData._id ? 'Edit Dedicated Mentor' : 'Add Dedicated Mentor'}</h1>
         <button className="btn btn-secondary" onClick={() => setEditingMentor(null)}>Cancel</button>
       </div>
@@ -1495,9 +1495,11 @@ function CategoriesView({ apiFetch, showToast, categories, subcategories, specia
 
   return (
     <div>
-      <div style={{ marginBottom: '32px' }}>
-        <h1>Categories & Sub-categories</h1>
-        <p className="subtitle">Manage page taxonomies, filters, color pills, and emojis.</p>
+      <div className="page-header">
+        <div>
+          <h1>Categories & Sub-categories</h1>
+          <p className="subtitle">Manage page taxonomies, filters, color pills, and emojis.</p>
+        </div>
       </div>
 
       <div className="grid-cols-12" style={{ alignItems: 'start' }}>
@@ -1876,7 +1878,7 @@ function ResourcesView({ apiFetch, showToast, categories, subcategories, special
   if (editingRes === null) {
     return (
       <div>
-        <div className="flex-between" style={{ marginBottom: '32px' }}>
+        <div className="page-header">
           <div>
             <h1>Resources Manager</h1>
             <p className="subtitle">Manage PDFs, Career Guides, Salary Reports, and tools.</p>
@@ -1959,7 +1961,7 @@ function ResourcesView({ apiFetch, showToast, categories, subcategories, special
   // ── RENDER EDITOR / ADD
   return (
     <div>
-      <div className="flex-between" style={{ marginBottom: '32px' }}>
+      <div className="page-header">
         <h1>{formData._id ? 'Edit Resource' : 'Add Resource'}</h1>
         <button className="btn btn-secondary" onClick={() => setEditingRes(null)}>Cancel</button>
       </div>
@@ -2219,7 +2221,7 @@ function SubmissionsView({ apiFetch, showToast }) {
 
   return (
     <div>
-      <div className="flex-between" style={{ marginBottom: '32px' }}>
+      <div className="page-header">
         <div>
           <h1>Form Submissions</h1>
           <p className="subtitle">Manage user entries, applications, and feedback.</p>
@@ -2418,9 +2420,11 @@ function StatsView({ apiFetch, showToast }) {
 
   return (
     <div>
-      <div style={{ marginBottom: '32px' }}>
-        <h1>Stats Manager</h1>
-        <p className="subtitle">Update indicators and numbers displayed on the public landing page.</p>
+      <div className="page-header">
+        <div>
+          <h1>Stats Manager</h1>
+          <p className="subtitle">Update indicators and numbers displayed on the public landing page.</p>
+        </div>
       </div>
 
       <form onSubmit={handleSave}>
@@ -2513,9 +2517,11 @@ function SettingsView({ apiFetch, showToast }) {
 
   return (
     <div>
-      <div style={{ marginBottom: '32px' }}>
-        <h1>Settings</h1>
-        <p className="subtitle">Configure platform triggers, email notifications, and quiz policies.</p>
+      <div className="page-header">
+        <div>
+          <h1>Settings</h1>
+          <p className="subtitle">Configure platform triggers, email notifications, and quiz policies.</p>
+        </div>
       </div>
 
       <form onSubmit={handleSave}>
@@ -2706,7 +2712,7 @@ function CmsView({ apiFetch, showToast }) {
   const renderImageUpload = (fieldName, labelText) => (
     <div className="form-group">
       <label>{labelText}</label>
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '4px' }}>
+      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '4px', flexWrap: 'wrap' }}>
         {cms[fieldName] ? (
           <img 
             src={cms[fieldName]} 
@@ -2716,10 +2722,10 @@ function CmsView({ apiFetch, showToast }) {
         ) : (
           <div style={{ height: '64px', width: '64px', borderRadius: 'var(--border-radius-sm)', background: 'hsl(var(--bg-dark))', border: '1px dotted hsl(var(--border-color))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: 'hsl(var(--text-muted))' }}>No Image</div>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: '1', minWidth: '200px' }}>
           <input 
             type="text" className="input-field" name={fieldName} value={cms[fieldName]} onChange={handleChange} 
-            placeholder="Or enter image URL manually..." style={{ fontSize: '12px', width: '320px' }}
+            placeholder="Or enter image URL manually..." style={{ fontSize: '12px', width: '100%', maxWidth: '320px' }}
           />
           <div>
             <input 
@@ -2737,9 +2743,11 @@ function CmsView({ apiFetch, showToast }) {
 
   return (
     <div>
-      <div style={{ marginBottom: '32px' }}>
-        <h1>CMS Manager</h1>
-        <p className="subtitle">Manage website section copies, imagery, and links dynamically.</p>
+      <div className="page-header">
+        <div>
+          <h1>CMS Manager</h1>
+          <p className="subtitle">Manage website section copies, imagery, and links dynamically.</p>
+        </div>
       </div>
 
       <div className="tab-row" style={{ marginBottom: '24px' }}>
