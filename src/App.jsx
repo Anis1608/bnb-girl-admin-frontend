@@ -380,6 +380,16 @@ function DashboardView({ apiFetch, setView, showToast }) {
   }, []);
 
   const handleStatusChange = async (id, newStatus) => {
+    // Keep reference to original state in case rollback is needed
+    const originalSubs = [...recentSubs];
+
+    // 1. Optimistically update local submissions state instantly
+    setRecentSubs(prevSubs => 
+      prevSubs.map(sub => 
+        sub._id === id ? { ...sub, status: newStatus } : sub
+      )
+    );
+
     try {
       await apiFetch(`/admin/submissions/${id}`, {
         method: 'PUT',
@@ -388,13 +398,12 @@ function DashboardView({ apiFetch, setView, showToast }) {
       });
       if (showToast) showToast('Submission status updated successfully!');
       
-      // Reload stats and recent submissions
+      // 2. Fetch fresh dashboard statistics to update the backlog bar and count labels
       const data = await apiFetch('/admin/dashboard-stats');
       setDashboardData(data);
-
-      const subsData = await apiFetch('/admin/submissions?page=1');
-      setRecentSubs(subsData.rows.slice(0, 5));
     } catch (err) {
+      // Rollback to original state on error
+      setRecentSubs(originalSubs);
       if (showToast) showToast('Failed to update submission status.', 'danger');
       console.error(err);
     }
