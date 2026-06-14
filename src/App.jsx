@@ -226,6 +226,10 @@ export default function App() {
             <BarChart3 size={18} />
             <span>Stats Manager</span>
           </div>
+          <div className={`menu-item ${activeView === 'cms' ? 'active' : ''}`} onClick={() => setActiveView('cms')}>
+            <FileText size={18} />
+            <span>CMS Manager</span>
+          </div>
           <div className={`menu-item ${activeView === 'settings' ? 'active' : ''}`} onClick={() => setActiveView('settings')}>
             <SettingsIcon size={18} />
             <span>Settings</span>
@@ -266,6 +270,7 @@ export default function App() {
             {activeView === 'resources' && <ResourcesView apiFetch={apiFetch} showToast={showToast} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />}
             {activeView === 'submissions' && <SubmissionsView apiFetch={apiFetch} showToast={showToast} />}
             {activeView === 'stats' && <StatsView apiFetch={apiFetch} showToast={showToast} />}
+            {activeView === 'cms' && <CmsView apiFetch={apiFetch} showToast={showToast} />}
             {activeView === 'settings' && <SettingsView apiFetch={apiFetch} showToast={showToast} />}
           </div>
         </div>
@@ -2569,6 +2574,440 @@ function SettingsView({ apiFetch, showToast }) {
             </div>
           </div>
 
+        </div>
+      </form>
+    </div>
+  );
+}
+
+// ── 9. CMS MANAGER VIEW ──────────────────────────────────────────────
+function CmsView({ apiFetch, showToast }) {
+  const [cms, setCms] = useState({
+    cms_navbar_logo: '',
+    cms_footer_tagline: '',
+    cms_footer_social_insta: '',
+    cms_footer_social_yt: '',
+    cms_footer_privacy_link: '',
+    cms_footer_terms_link: '',
+    cms_footer_copyright: '',
+    cms_hero_eyebrow: '',
+    cms_hero_title: '',
+    cms_hero_subtitle: '',
+    cms_hero_cta_primary_text: '',
+    cms_hero_cta_secondary_text: '',
+    cms_hero_social_proof: '',
+    cms_mission_kicker: '',
+    cms_mission_statement: '',
+    cms_mission_body: '',
+    cms_mission_author: '',
+    cms_why_eyebrow: '',
+    cms_why_title: '',
+    cms_why_subtitle: '',
+    cms_why_card1_kicker: '', cms_why_card1_title: '', cms_why_card1_desc: '', cms_why_card1_cta: '',
+    cms_why_card2_kicker: '', cms_why_card2_title: '', cms_why_card2_desc: '', cms_why_card2_cta: '',
+    cms_why_card3_kicker: '', cms_why_card3_title: '', cms_why_card3_desc: '', cms_why_card3_cta: '',
+    cms_why_card4_kicker: '', cms_why_card4_title: '', cms_why_card4_desc: '', cms_why_card4_cta: '',
+    cms_about_host_photo: '',
+    cms_about_ticker: '',
+    cms_about_eyebrow_badge: '',
+    cms_about_eyebrow_school: '',
+    cms_about_hero_name: '',
+    cms_about_hero_desc: '',
+    cms_about_story_title: '',
+    cms_about_story_body: '',
+    cms_about_chapter1_label: '', cms_about_chapter1_title: '', cms_about_chapter1_body: '',
+    cms_about_chapter2_label: '', cms_about_chapter2_title: '', cms_about_chapter2_body: '',
+    cms_about_chapter3_label: '', cms_about_chapter3_title: '', cms_about_chapter3_body: '',
+    cms_about_chapter4_label: '', cms_about_chapter4_title: '', cms_about_chapter4_body: '',
+    cms_about_quote_text: '',
+    cms_about_quote_attr: '',
+    cms_about_pillar1_title: '', cms_about_pillar1_body: '',
+    cms_about_pillar2_title: '', cms_about_pillar2_body: '',
+    cms_about_pillar3_title: '', cms_about_pillar3_body: '',
+    cms_about_hobby1_name: '', cms_about_hobby1_desc: '', cms_about_hobby1_pill: '',
+    cms_about_hobby2_name: '', cms_about_hobby2_desc: '', cms_about_hobby2_pill: '',
+    cms_about_hobby3_name: '', cms_about_hobby3_desc: '', cms_about_hobby3_pill: '',
+    cms_about_player_title: '',
+    cms_about_player_sub: '',
+    cms_about_listen_title: '',
+    cms_about_listen_body: '',
+    cms_about_contact_email: ''
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [activeSubTab, setActiveSubTab] = useState('general');
+  const [uploadingField, setUploadingField] = useState('');
+
+  useEffect(() => {
+    const fetchCms = async () => {
+      try {
+        const data = await apiFetch('/admin/cms');
+        setCms(prev => ({ ...prev, ...data }));
+      } catch (err) {
+        showToast(err.message, 'danger');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCms();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCms(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = async (e, fieldName) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingField(fieldName);
+    try {
+      const url = await handleFileUpload(file, apiFetch, showToast);
+      setCms(prev => ({ ...prev, [fieldName]: url }));
+      showToast('Image uploaded successfully!');
+    } catch (err) {
+      showToast(err.message, 'danger');
+    } finally {
+      setUploadingField('');
+    }
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await apiFetch('/admin/cms', {
+        method: 'PUT',
+        body: JSON.stringify(cms)
+      });
+      showToast('CMS changes saved successfully!');
+    } catch (err) {
+      showToast(err.message, 'danger');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="flex-center" style={{ height: '200px', color: 'hsl(var(--text-secondary))' }}>Loading CMS fields...</div>;
+  }
+
+  const renderImageUpload = (fieldName, labelText) => (
+    <div className="form-group">
+      <label>{labelText}</label>
+      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '4px' }}>
+        {cms[fieldName] ? (
+          <img 
+            src={cms[fieldName]} 
+            alt="Preview" 
+            style={{ height: '64px', minWidth: '64px', objectFit: 'contain', borderRadius: 'var(--border-radius-sm)', background: 'hsl(var(--bg-dark))', border: '1px solid hsl(var(--border-color))', padding: '4px' }} 
+          />
+        ) : (
+          <div style={{ height: '64px', width: '64px', borderRadius: 'var(--border-radius-sm)', background: 'hsl(var(--bg-dark))', border: '1px dotted hsl(var(--border-color))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: 'hsl(var(--text-muted))' }}>No Image</div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <input 
+            type="text" className="input-field" name={fieldName} value={cms[fieldName]} onChange={handleChange} 
+            placeholder="Or enter image URL manually..." style={{ fontSize: '12px', width: '320px' }}
+          />
+          <div>
+            <input 
+              type="file" accept="image/*" onChange={(e) => handleFileChange(e, fieldName)} 
+              style={{ display: 'none' }} id={`file-${fieldName}`}
+            />
+            <label htmlFor={`file-${fieldName}`} className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', padding: '6px 12px', display: 'inline-block' }}>
+              {uploadingField === fieldName ? 'Uploading...' : 'Upload Image File'}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div style={{ marginBottom: '32px' }}>
+        <h1>CMS Manager</h1>
+        <p className="subtitle">Manage website section copies, imagery, and links dynamically.</p>
+      </div>
+
+      <div className="tab-row" style={{ marginBottom: '24px' }}>
+        <button type="button" className={`tab-btn ${activeSubTab === 'general' ? 'active' : ''}`} onClick={() => setActiveSubTab('general')}>General</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'hero' ? 'active' : ''}`} onClick={() => setActiveSubTab('hero')}>Hero Section</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'mission' ? 'active' : ''}`} onClick={() => setActiveSubTab('mission')}>Mission Section</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'why' ? 'active' : ''}`} onClick={() => setActiveSubTab('why')}>Why Section</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'about' ? 'active' : ''}`} onClick={() => setActiveSubTab('about')}>About Page</button>
+      </div>
+
+      <form onSubmit={handleSave}>
+        <div className="grid-cols-12" style={{ alignItems: 'start', gap: '24px' }}>
+          <div style={{ gridColumn: 'span 8' }}>
+            <div className="glass-box">
+              {activeSubTab === 'general' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>General &amp; Layout Settings</h2>
+                  {renderImageUpload('cms_navbar_logo', 'Navbar Logo')}
+                  
+                  <div className="form-group">
+                    <label>Footer Tagline</label>
+                    <textarea className="input-field" name="cms_footer_tagline" value={cms.cms_footer_tagline} onChange={handleChange} rows={3} placeholder="Real Stories. Real Women. Real Possibilities..." />
+                  </div>
+                  
+                  <div className="grid-cols-2" style={{ gap: '16px' }}>
+                    <div className="form-group">
+                      <label>Instagram Link</label>
+                      <input type="text" className="input-field" name="cms_footer_social_insta" value={cms.cms_footer_social_insta} onChange={handleChange} placeholder="https://instagram.com/..." />
+                    </div>
+                    <div className="form-group">
+                      <label>YouTube Channel Link</label>
+                      <input type="text" className="input-field" name="cms_footer_social_yt" value={cms.cms_footer_social_yt} onChange={handleChange} placeholder="https://youtube.com/..." />
+                    </div>
+                  </div>
+
+                  <div className="grid-cols-2" style={{ gap: '16px' }}>
+                    <div className="form-group">
+                      <label>Privacy Policy URL</label>
+                      <input type="text" className="input-field" name="cms_footer_privacy_link" value={cms.cms_footer_privacy_link} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                      <label>Terms of Service URL</label>
+                      <input type="text" className="input-field" name="cms_footer_terms_link" value={cms.cms_footer_terms_link} onChange={handleChange} />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Footer Copyright Copy</label>
+                    <input type="text" className="input-field" name="cms_footer_copyright" value={cms.cms_footer_copyright} onChange={handleChange} placeholder="&copy; 2026 Bold &amp; Brilliant Girls..." />
+                  </div>
+                </div>
+              )}
+
+              {activeSubTab === 'hero' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>Hero Section</h2>
+                  
+                  <div className="form-group">
+                    <label>Hero Eyebrow Copy</label>
+                    <input type="text" className="input-field" name="cms_hero_eyebrow" value={cms.cms_hero_eyebrow} onChange={handleChange} placeholder="New Episode Live Now" />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Hero Title Copy (Allows HTML)</label>
+                    <input type="text" className="input-field" name="cms_hero_title" value={cms.cms_hero_title} onChange={handleChange} placeholder="Bold &amp; <em class='gold'>Brilliant</em> Girls" />
+                    <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>Tip: Use <code>&lt;em className="gold"&gt;text&lt;/em&gt;</code> to highlight in gold.</span>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Hero Subtitle Copy</label>
+                    <textarea className="input-field" name="cms_hero_subtitle" value={cms.cms_hero_subtitle} onChange={handleChange} rows={3} placeholder="Real stories from inspiring women..." />
+                  </div>
+
+                  <div className="grid-cols-2" style={{ gap: '16px' }}>
+                    <div className="form-group">
+                      <label>Primary Button Text</label>
+                      <input type="text" className="input-field" name="cms_hero_cta_primary_text" value={cms.cms_hero_cta_primary_text} onChange={handleChange} placeholder="Watch Now" />
+                    </div>
+                    <div className="form-group">
+                      <label>Secondary Button Text</label>
+                      <input type="text" className="input-field" name="cms_hero_cta_secondary_text" value={cms.cms_hero_cta_secondary_text} onChange={handleChange} placeholder="Find a Mentor &rarr;" />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Social Proof Copy</label>
+                    <input type="text" className="input-field" name="cms_hero_social_proof" value={cms.cms_hero_social_proof} onChange={handleChange} placeholder="Loved by 50+ bold women" />
+                  </div>
+                </div>
+              )}
+
+              {activeSubTab === 'mission' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>Mission Section</h2>
+
+                  <div className="form-group">
+                    <label>Purpose Kicker</label>
+                    <input type="text" className="input-field" name="cms_mission_kicker" value={cms.cms_mission_kicker} onChange={handleChange} placeholder="Our Purpose" />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Blockquote Quote Statement</label>
+                    <textarea className="input-field" name="cms_mission_statement" value={cms.cms_mission_statement} onChange={handleChange} rows={4} placeholder="Every young woman deserves to see herself..." />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Body copy text</label>
+                    <textarea className="input-field" name="cms_mission_body" value={cms.cms_mission_body} onChange={handleChange} rows={4} placeholder="We connect ambitious young women..." />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Author Attribution</label>
+                    <input type="text" className="input-field" name="cms_mission_author" value={cms.cms_mission_author} onChange={handleChange} placeholder="— The Bold &amp; Brilliant Girls Team" />
+                  </div>
+                </div>
+              )}
+
+              {activeSubTab === 'why' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>Why Section Settings</h2>
+                  
+                  <div className="grid-cols-2" style={{ gap: '16px' }}>
+                    <div className="form-group">
+                      <label>Section Eyebrow</label>
+                      <input type="text" className="input-field" name="cms_why_eyebrow" value={cms.cms_why_eyebrow} onChange={handleChange} placeholder="What We Offer" />
+                    </div>
+                    <div className="form-group">
+                      <label>Section Title</label>
+                      <input type="text" className="input-field" name="cms_why_title" value={cms.cms_why_title} onChange={handleChange} placeholder="Why Bold &amp; Brilliant Girls?" />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Section Subtitle</label>
+                    <textarea className="input-field" name="cms_why_subtitle" value={cms.cms_why_subtitle} onChange={handleChange} rows={2} />
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  
+                  <h3>Box Card 1: Podcast</h3>
+                  <div className="grid-cols-3" style={{ gap: '12px' }}>
+                    <div className="form-group"><label>Kicker</label><input type="text" className="input-field" name="cms_why_card1_kicker" value={cms.cms_why_card1_kicker} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_why_card1_title" value={cms.cms_why_card1_title} onChange={handleChange} /></div>
+                    <div className="form-group"><label>CTA Label</label><input type="text" className="input-field" name="cms_why_card1_cta" value={cms.cms_why_card1_cta} onChange={handleChange} /></div>
+                  </div>
+                  <div className="form-group"><label>Description</label><textarea className="input-field" name="cms_why_card1_desc" value={cms.cms_why_card1_desc} onChange={handleChange} rows={2} /></div>
+
+                  <h3>Box Card 2: Mentorship</h3>
+                  <div className="grid-cols-3" style={{ gap: '12px' }}>
+                    <div className="form-group"><label>Kicker</label><input type="text" className="input-field" name="cms_why_card2_kicker" value={cms.cms_why_card2_kicker} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_why_card2_title" value={cms.cms_why_card2_title} onChange={handleChange} /></div>
+                    <div className="form-group"><label>CTA Label</label><input type="text" className="input-field" name="cms_why_card2_cta" value={cms.cms_why_card2_cta} onChange={handleChange} /></div>
+                  </div>
+                  <div className="form-group"><label>Description</label><textarea className="input-field" name="cms_why_card2_desc" value={cms.cms_why_card2_desc} onChange={handleChange} rows={2} /></div>
+
+                  <h3>Box Card 3: Resources</h3>
+                  <div className="grid-cols-3" style={{ gap: '12px' }}>
+                    <div className="form-group"><label>Kicker</label><input type="text" className="input-field" name="cms_why_card3_kicker" value={cms.cms_why_card3_kicker} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_why_card3_title" value={cms.cms_why_card3_title} onChange={handleChange} /></div>
+                    <div className="form-group"><label>CTA Label</label><input type="text" className="input-field" name="cms_why_card3_cta" value={cms.cms_why_card3_cta} onChange={handleChange} /></div>
+                  </div>
+                  <div className="form-group"><label>Description</label><textarea className="input-field" name="cms_why_card3_desc" value={cms.cms_why_card3_desc} onChange={handleChange} rows={2} /></div>
+
+                  <h3>Box Card 4: Community</h3>
+                  <div className="grid-cols-3" style={{ gap: '12px' }}>
+                    <div className="form-group"><label>Kicker</label><input type="text" className="input-field" name="cms_why_card4_kicker" value={cms.cms_why_card4_kicker} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_why_card4_title" value={cms.cms_why_card4_title} onChange={handleChange} /></div>
+                    <div className="form-group"><label>CTA Label</label><input type="text" className="input-field" name="cms_why_card4_cta" value={cms.cms_why_card4_cta} onChange={handleChange} /></div>
+                  </div>
+                  <div className="form-group"><label>Description</label><textarea className="input-field" name="cms_why_card4_desc" value={cms.cms_why_card4_desc} onChange={handleChange} rows={2} /></div>
+                </div>
+              )}
+
+              {activeSubTab === 'about' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>About Page CMS</h2>
+                  {renderImageUpload('cms_about_host_photo', 'Host Profile Photo')}
+
+                  <div className="form-group">
+                    <label>Moving Marquee Ticker Copy</label>
+                    <input type="text" className="input-field" name="cms_about_ticker" value={cms.cms_about_ticker} onChange={handleChange} placeholder="Bold and Brilliant Girls; Podcast for Teens; Dream Boldly..." />
+                    <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>Separate phrases with semicolons (<code>;</code>)</span>
+                  </div>
+
+                  <div className="grid-cols-3" style={{ gap: '12px' }}>
+                    <div className="form-group"><label>Eyebrow Badge</label><input type="text" className="input-field" name="cms_about_eyebrow_badge" value={cms.cms_about_eyebrow_badge} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Eyebrow School</label><input type="text" className="input-field" name="cms_about_eyebrow_school" value={cms.cms_about_eyebrow_school} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Host Name</label><input type="text" className="input-field" name="cms_about_hero_name" value={cms.cms_about_hero_name} onChange={handleChange} /></div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Hero Biography Description</label>
+                    <textarea className="input-field" name="cms_about_hero_desc" value={cms.cms_about_hero_desc} onChange={handleChange} rows={3} />
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  <h3>Origin Story Section</h3>
+                  <div className="form-group">
+                    <label>Origin Story Title</label>
+                    <input type="text" className="input-field" name="cms_about_story_title" value={cms.cms_about_story_title} onChange={handleChange} />
+                  </div>
+                  <div className="form-group">
+                    <label>Origin Story Body Copy</label>
+                    <textarea className="input-field" name="cms_about_story_body" value={cms.cms_about_story_body} onChange={handleChange} rows={4} />
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  <h3>Biography Chapters (1-4)</h3>
+                  {[1, 2, 3, 4].map(num => (
+                    <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.3)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginBottom: '16px' }}>
+                      <h4>Chapter {num}</h4>
+                      <div className="grid-cols-2" style={{ gap: '12px', marginBottom: '8px' }}>
+                        <div className="form-group"><label>Kicker / Label</label><input type="text" className="input-field" name={`cms_about_chapter${num}_label`} value={cms[`cms_about_chapter${num}_label`]} onChange={handleChange} /></div>
+                        <div className="form-group"><label>Title</label><input type="text" className="input-field" name={`cms_about_chapter${num}_title`} value={cms[`cms_about_chapter${num}_title`]} onChange={handleChange} /></div>
+                      </div>
+                      <div className="form-group"><label>Body Copy</label><textarea className="input-field" name={`cms_about_chapter${num}_body`} value={cms[`cms_about_chapter${num}_body`]} onChange={handleChange} rows={2} /></div>
+                    </div>
+                  ))}
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  <h3>Sanah Quote Strip</h3>
+                  <div className="form-group">
+                    <label>Quote Content</label>
+                    <textarea className="input-field" name="cms_about_quote_text" value={cms.cms_about_quote_text} onChange={handleChange} rows={3} />
+                  </div>
+                  <div className="form-group">
+                    <label>Quote Attribution</label>
+                    <input type="text" className="input-field" name="cms_about_quote_attr" value={cms.cms_about_quote_attr} onChange={handleChange} />
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  <h3>Core Pillars (1-3)</h3>
+                  {[1, 2, 3].map(num => (
+                    <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.3)', padding: '12px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginBottom: '12px' }}>
+                      <h4>Pillar {num}</h4>
+                      <div className="form-group" style={{ marginBottom: '8px' }}><label>Title</label><input type="text" className="input-field" name={`cms_about_pillar${num}_title`} value={cms[`cms_about_pillar${num}_title`]} onChange={handleChange} /></div>
+                      <div className="form-group"><label>Body copy</label><textarea className="input-field" name={`cms_about_pillar${num}_body`} value={cms[`cms_about_pillar${num}_body`]} onChange={handleChange} rows={2} /></div>
+                    </div>
+                  ))}
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  <h3>Hobbies &amp; Values (Swimming, Golf, Skiing)</h3>
+                  {[1, 2, 3].map(num => (
+                    <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.3)', padding: '12px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginBottom: '12px' }}>
+                      <h4>Hobby {num}</h4>
+                      <div className="grid-cols-2" style={{ gap: '12px', marginBottom: '8px' }}>
+                        <div className="form-group"><label>Name</label><input type="text" className="input-field" name={`cms_about_hobby${num}_name`} value={cms[`cms_about_hobby${num}_name`]} onChange={handleChange} /></div>
+                        <div className="form-group"><label>Core Skill Pill</label><input type="text" className="input-field" name={`cms_about_hobby${num}_pill`} value={cms[`cms_about_hobby${num}_pill`]} onChange={handleChange} /></div>
+                      </div>
+                      <div className="form-group"><label>Description</label><textarea className="input-field" name={`cms_about_hobby${num}_desc`} value={cms[`cms_about_hobby${num}_desc`]} onChange={handleChange} rows={2} /></div>
+                    </div>
+                  ))}
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  <h3>Player Card &amp; Contact info</h3>
+                  <div className="grid-cols-2" style={{ gap: '12px' }}>
+                    <div className="form-group"><label>Player Title</label><input type="text" className="input-field" name="cms_about_player_title" value={cms.cms_about_player_title} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Player Subtitle</label><input type="text" className="input-field" name="cms_about_player_sub" value={cms.cms_about_player_sub} onChange={handleChange} /></div>
+                  </div>
+                  <div className="grid-cols-2" style={{ gap: '12px' }}>
+                    <div className="form-group"><label>Listen Header Title</label><input type="text" className="input-field" name="cms_about_listen_title" value={cms.cms_about_listen_title} onChange={handleChange} /></div>
+                    <div className="form-group"><label>Contact Email Address</label><input type="email" className="input-field" name="cms_about_contact_email" value={cms.cms_about_contact_email} onChange={handleChange} /></div>
+                  </div>
+                  <div className="form-group"><label>Listen Copy Body</label><textarea className="input-field" name="cms_about_listen_body" value={cms.cms_about_listen_body} onChange={handleChange} rows={2} /></div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ gridColumn: 'span 4' }}>
+            <div className="glass-box" style={{ position: 'sticky', top: '24px' }}>
+              <h2 style={{ marginBottom: '20px' }}>Publishing</h2>
+              <p style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginBottom: '20px' }}>Saving changes will write records to the live database, immediately updating content for all website visitors.</p>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '44px' }} disabled={saving}>
+                {saving ? 'Publishing...' : 'Publish Content Changes'}
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </div>
