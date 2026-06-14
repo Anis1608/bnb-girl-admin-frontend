@@ -401,7 +401,91 @@ function DashboardView({ apiFetch, setView, showToast }) {
   };
 
   if (loading) {
-    return <div className="flex-center" style={{ height: '300px', color: 'hsl(var(--text-secondary))' }}>Loading dashboard metrics...</div>;
+    return (
+      <div>
+        {/* Header Skeleton */}
+        <div className="page-header">
+          <div>
+            <div className="skeleton-title skeleton-shimmer" />
+            <div className="skeleton-subtitle skeleton-shimmer" />
+          </div>
+        </div>
+
+        {/* 4 Cards Grid Skeleton */}
+        <div className="grid-cols-4" style={{ marginBottom: '32px' }}>
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton-card">
+              <div className="skeleton-card-header skeleton-shimmer" />
+              <div className="skeleton-card-number skeleton-shimmer" />
+              <div className="skeleton-card-desc skeleton-shimmer" />
+              <div className="skeleton-card-pills">
+                <div className="skeleton-card-pill skeleton-shimmer" />
+                <div className="skeleton-card-pill skeleton-shimmer" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Breakdown & Trend Row Skeleton */}
+        <div className="grid-cols-12" style={{ marginBottom: '32px' }}>
+          {/* Form Breakdown Box */}
+          <div className="col-span-8">
+            <div className="skeleton-box">
+              <div className="skeleton-box-title skeleton-shimmer" style={{ width: '250px' }} />
+              <div className="skeleton-box-subtitle skeleton-shimmer" style={{ width: '380px', marginBottom: '32px' }} />
+              
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} style={{ marginBottom: '20px' }}>
+                  <div className="skeleton-row skeleton-shimmer" style={{ width: '40%', height: '12px' }} />
+                  <div className="skeleton-bar-track skeleton-shimmer" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Trend Chart & Backlog Box */}
+          <div className="col-span-4" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div className="skeleton-box" style={{ minHeight: '180px' }}>
+              <div className="skeleton-box-title skeleton-shimmer" style={{ width: '150px' }} />
+              <div className="skeleton-box-subtitle skeleton-shimmer" style={{ width: '180px' }} />
+              <div className="skeleton-row skeleton-shimmer" style={{ height: '90px', marginTop: '16px' }} />
+            </div>
+            <div className="skeleton-box" style={{ minHeight: '160px' }}>
+              <div className="skeleton-box-title skeleton-shimmer" style={{ width: '120px' }} />
+              <div className="skeleton-box-subtitle skeleton-shimmer" style={{ width: '150px' }} />
+              <div className="skeleton-bar-track skeleton-shimmer" style={{ height: '8px', marginTop: '16px' }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Submissions Log & Taxonomy Matrix Skeleton */}
+        <div className="grid-cols-12">
+          {/* Submissions Log */}
+          <div className="col-span-7">
+            <div className="skeleton-box">
+              <div className="skeleton-box-title skeleton-shimmer" style={{ width: '200px' }} />
+              <div className="skeleton-box-subtitle skeleton-shimmer" style={{ width: '280px', marginBottom: '24px' }} />
+              
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="skeleton-list-item skeleton-shimmer" />
+              ))}
+            </div>
+          </div>
+
+          {/* Taxonomy Matrix */}
+          <div className="col-span-5">
+            <div className="skeleton-box">
+              <div className="skeleton-box-title skeleton-shimmer" style={{ width: '180px' }} />
+              <div className="skeleton-box-subtitle skeleton-shimmer" style={{ width: '240px', marginBottom: '24px' }} />
+              
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="skeleton-row skeleton-shimmer" style={{ height: '28px', marginBottom: '12px' }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!dashboardData) {
