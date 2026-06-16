@@ -1046,6 +1046,7 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
   const [editingEp, setEditingEp] = useState(null); // null means listing. {}/obj means edit/new form.
   const [formData, setFormData] = useState({});
   const [uploadFile, setUploadFile] = useState(null);
+  const [pdfUploadFile, setPdfUploadFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
   const loadEpisodes = async () => {
@@ -1073,16 +1074,18 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
       subcategory_id: ep.subcategory_id?._id || ep.subcategory_id || '',
       specialized_field_id: ep.specialized_field_id?._id || ep.specialized_field_id || '',
       episode_type: ep.episode_type || 'Interview',
+      pdf_url: ep.pdf_url || '',
       slots_str: (ep.slots && ep.slots.length > 0) ? ep.slots.join(', ') : '',
       pricing_arr: ep.pricing ? Object.entries(ep.pricing).map(([dur, price]) => ({ dur, price })) : []
     } : {
       title: '', guest_name: '', guest_role: '', guest_photo: '', guest_bio: '', guest_quote: '',
       episode_number: '', category_id: '', subcategory_id: '', specialized_field_id: '', episode_type: 'Interview',
-      youtube_id: '', spotify_url: '', audio_url: '', duration: '', description: '', tags: '', is_featured: false, is_new: true,
+      youtube_id: '', spotify_url: '', audio_url: '', pdf_url: '', duration: '', description: '', tags: '', is_featured: false, is_new: true,
       is_mentor: false, mentor_rate: '', mentor_avail: '', mentor_linkedin: '', mentor_fields: '', status: 'published',
       slots_str: '', pricing_arr: []
     });
     setUploadFile(null);
+    setPdfUploadFile(null);
   };
 
   const handleTextChange = (e) => {
@@ -1115,6 +1118,11 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
         photoUrl = await handleFileUpload(uploadFile, apiFetch, showToast);
       }
 
+      let pdfUrl = formData.pdf_url;
+      if (pdfUploadFile) {
+        pdfUrl = await handleFileUpload(pdfUploadFile, apiFetch, showToast);
+      }
+
       const slots = typeof formData.slots_str === 'string'
         ? formData.slots_str.split(',').map(s => s.trim()).filter(Boolean)
         : (formData.slots || []);
@@ -1130,6 +1138,7 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
       const submissionData = {
         ...formData,
         guest_photo: photoUrl,
+        pdf_url: pdfUrl,
         slots,
         pricing,
         durs: durs.length > 0 ? durs : (formData.durs || ['30', '60'])
@@ -1452,6 +1461,35 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
                   </label>
                   {uploadFile && <span style={{ fontSize: '12px', color: 'hsl(var(--text-secondary))' }}>{uploadFile.name}</span>}
                 </div>
+              </div>
+
+              <div className="form-group">
+                <label>Guest PDF / Career Guide</label>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                  {formData.pdf_url && !pdfUploadFile && (
+                    <a href={formData.pdf_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--accent)', textDecoration: 'underline' }}>
+                      <FileText size={16} /> View Current PDF
+                    </a>
+                  )}
+                  {pdfUploadFile && (
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--primary-glow)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Check size={18} style={{ color: 'var(--primary)' }} />
+                    </div>
+                  )}
+                  <input 
+                    type="file" accept=".pdf" id="guest-pdf-upload" style={{ display: 'none' }}
+                    onChange={(e) => setPdfUploadFile(e.target.files[0])}
+                  />
+                  <label htmlFor="guest-pdf-upload" className="btn btn-secondary btn-sm" style={{ cursor: 'pointer' }}>
+                    Choose PDF File
+                  </label>
+                  {pdfUploadFile && <span style={{ fontSize: '12px', color: 'hsl(var(--text-secondary))' }}>{pdfUploadFile.name}</span>}
+                </div>
+                <input 
+                  type="text" className="input-field" name="pdf_url" placeholder="Or paste PDF url manually..."
+                  value={formData.pdf_url} onChange={handleTextChange}
+                  style={{ marginTop: '8px', fontSize: '12px' }}
+                />
               </div>
 
               <div className="form-group">
