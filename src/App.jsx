@@ -3563,12 +3563,20 @@ function CmsView({ apiFetch, showToast, episodes }) {
   const [saving, setSaving] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState('general');
   const [uploadingField, setUploadingField] = useState('');
+  const [adminMentors, setAdminMentors] = useState([]);
 
   useEffect(() => {
     const fetchCms = async () => {
       try {
         const data = await apiFetch('/admin/cms');
         setCms(prev => ({ ...prev, ...data }));
+        
+        try {
+          const mentorsData = await apiFetch('/mentors');
+          setAdminMentors(mentorsData);
+        } catch (mErr) {
+          console.error('Failed to load mentors for spotlight CMS', mErr);
+        }
       } catch (err) {
         showToast(err.message, 'danger');
       } finally {
@@ -3981,53 +3989,55 @@ function CmsView({ apiFetch, showToast, episodes }) {
               })()}
 
               {activeSubTab === 'spotlight' && (() => {
-                const selectedMentor = episodes.find(ep => String(ep.id) === String(cms.cms_spotlight_mentor_id));
+                const selectedMentor = adminMentors.find(m => String(m.id) === String(cms.cms_spotlight_mentor_id));
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     <h2>🌟 Spotlight: This Week's Guest</h2>
                     <p style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginTop: '-12px' }}>
-                      Select which episode guest appears in the "This Week's Guest" section on the homepage. The selected mentor's full profile will be featured.
+                      Select which guest/mentor appears in the "This Week's Guest" section on the homepage. The selected mentor's full profile will be featured.
                     </p>
 
                     <div className="form-group">
-                      <label>Select Featured Guest (from Episodes)</label>
+                      <label>Select Featured Mentor</label>
                       <select
                         className="select-field"
                         name="cms_spotlight_mentor_id"
                         value={cms.cms_spotlight_mentor_id || ''}
                         onChange={handleChange}
                       >
-                        <option value="">— Use default (most recently featured episode) —</option>
-                        {episodes.map(ep => (
-                          <option key={ep.id} value={ep.id}>
-                            EP.{ep.episode_number || '?'} — {ep.guest_name || ep.title} {ep.guest_role ? `· ${ep.guest_role}` : ''}
+                        <option value="">— Use default (most recently featured episode guest) —</option>
+                        {adminMentors.map(m => (
+                          <option key={m.id} value={m.id}>
+                            {m.name} {m.role ? `· ${m.role}` : ''} ({m.source === 'episode' ? `EP. ${m.episode_number || '?'}` : 'Dedicated Mentor'})
                           </option>
                         ))}
                       </select>
                       <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '4px', display: 'block' }}>
-                        Leave empty to automatically show the most recently featured/marked episode.
+                        Leave empty to automatically show the most recently featured episode guest.
                       </span>
                     </div>
 
                     {selectedMentor && (
                       <div style={{ background: 'hsl(var(--bg-dark) / 0.4)', border: '1px solid hsl(var(--border-color))', borderRadius: 'var(--border-radius-md)', padding: '16px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                        {selectedMentor.guest_photo ? (
-                          <img src={selectedMentor.guest_photo} alt={selectedMentor.guest_name} style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)', flexShrink: 0 }} />
+                        {selectedMentor.photo ? (
+                          <img src={selectedMentor.photo} alt={selectedMentor.name} style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)', flexShrink: 0 }} />
                         ) : (
                           <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'hsl(var(--bg-surface))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>🎙️</div>
                         )}
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: '700', fontSize: '15px', marginBottom: '4px' }}>{selectedMentor.guest_name}</div>
-                          <div style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginBottom: '4px' }}>{selectedMentor.guest_role}</div>
-                          <div style={{ fontSize: '12px', color: 'hsl(var(--text-muted))' }}>EP. {selectedMentor.episode_number} · {selectedMentor.category_name || ''}</div>
-                          {selectedMentor.guest_bio && (
+                          <div style={{ fontWeight: '700', fontSize: '15px', marginBottom: '4px' }}>{selectedMentor.name}</div>
+                          <div style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginBottom: '4px' }}>{selectedMentor.role}</div>
+                          <div style={{ fontSize: '12px', color: 'hsl(var(--text-muted))' }}>
+                            {selectedMentor.source === 'episode' ? `EP. ${selectedMentor.episode_number}` : 'Dedicated Mentor'} · {selectedMentor.cat_name || ''}
+                          </div>
+                          {selectedMentor.bio && (
                             <div style={{ fontSize: '12px', color: 'hsl(var(--text-secondary))', marginTop: '8px', lineHeight: '1.5' }}>
-                              {selectedMentor.guest_bio.slice(0, 180)}{selectedMentor.guest_bio.length > 180 ? '...' : ''}
+                              {selectedMentor.bio.slice(0, 180)}{selectedMentor.bio.length > 180 ? '...' : ''}
                             </div>
                           )}
-                          {selectedMentor.guest_quote && (
+                          {selectedMentor.quote && (
                             <div style={{ fontSize: '12px', fontStyle: 'italic', color: 'var(--accent)', marginTop: '8px', borderLeft: '2px solid var(--accent)', paddingLeft: '8px' }}>
-                              "{selectedMentor.guest_quote.slice(0, 120)}{selectedMentor.guest_quote.length > 120 ? '...' : ''}"
+                              "{selectedMentor.quote.slice(0, 120)}{selectedMentor.quote.length > 120 ? '...' : ''}"
                             </div>
                           )}
                         </div>
