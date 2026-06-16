@@ -3547,7 +3547,14 @@ function CmsView({ apiFetch, showToast }) {
     cms_about_player_sub: '',
     cms_about_listen_title: '',
     cms_about_listen_body: '',
-    cms_about_contact_email: ''
+    cms_about_contact_email: '',
+    // Series Collections
+    cms_series_stem_title: '', cms_series_stem_epcount: '', cms_series_stem_category: '', cms_series_stem_youtube: '', cms_series_stem_percentage: '',
+    cms_series_entrepreneurship_title: '', cms_series_entrepreneurship_epcount: '', cms_series_entrepreneurship_category: '', cms_series_entrepreneurship_youtube: '', cms_series_entrepreneurship_percentage: '',
+    cms_series_mental_title: '', cms_series_mental_epcount: '', cms_series_mental_category: '', cms_series_mental_youtube: '', cms_series_mental_percentage: '',
+    cms_series_law_title: '', cms_series_law_epcount: '', cms_series_law_category: '', cms_series_law_youtube: '', cms_series_law_percentage: '',
+    cms_series_creative_title: '', cms_series_creative_epcount: '', cms_series_creative_category: '', cms_series_creative_youtube: '', cms_series_creative_percentage: '',
+    cms_series_finance_title: '', cms_series_finance_epcount: '', cms_series_finance_category: '', cms_series_finance_youtube: '', cms_series_finance_percentage: ''
   });
 
   const [loading, setLoading] = useState(true);
@@ -3650,12 +3657,13 @@ function CmsView({ apiFetch, showToast }) {
         </div>
       </div>
 
-      <div className="tab-row" style={{ marginBottom: '24px' }}>
+      <div className="tab-row" style={{ marginBottom: '24px', flexWrap: 'wrap' }}>
         <button type="button" className={`tab-btn ${activeSubTab === 'general' ? 'active' : ''}`} onClick={() => setActiveSubTab('general')}>General</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'hero' ? 'active' : ''}`} onClick={() => setActiveSubTab('hero')}>Hero Section</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'mission' ? 'active' : ''}`} onClick={() => setActiveSubTab('mission')}>Mission Section</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'why' ? 'active' : ''}`} onClick={() => setActiveSubTab('why')}>Why Section</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'about' ? 'active' : ''}`} onClick={() => setActiveSubTab('about')}>About Page</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'series' ? 'active' : ''}`} onClick={() => setActiveSubTab('series')}>Series Collections</button>
       </div>
 
       <form onSubmit={handleSave}>
@@ -3914,6 +3922,60 @@ function CmsView({ apiFetch, showToast }) {
                   <div className="form-group"><label>Listen Copy Body</label><textarea className="input-field" name="cms_about_listen_body" value={cms.cms_about_listen_body} onChange={handleChange} rows={2} /></div>
                 </div>
               )}
+
+              {activeSubTab === 'series' && (() => {
+                const SERIES_DEFS = [
+                  { id: 'stem', label: 'Women in STEM', icon: '🔬', colorHint: 'Teal / STEM' },
+                  { id: 'entrepreneurship', label: 'Entrepreneurship Diaries', icon: '🚀', colorHint: 'Amber / Business' },
+                  { id: 'mental', label: 'Mental Health & Career', icon: '🌸', colorHint: 'Pink / Health' },
+                  { id: 'law', label: 'Breaking Barriers in Law', icon: '⚖️', colorHint: 'Slate / Law' },
+                  { id: 'creative', label: 'The Creative Career', icon: '🎨', colorHint: 'Orange / Arts' },
+                  { id: 'finance', label: 'Corporate & Finance', icon: '💼', colorHint: 'Blue / Finance' },
+                ];
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <h2>Series Collections</h2>
+                    <p style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginTop: '-12px' }}>
+                      Manage the 6 Curated Collection cards shown on the homepage. Set a YouTube URL to redirect externally, or leave it blank to redirect internally to that category on the Episodes page.
+                    </p>
+                    {SERIES_DEFS.map(s => (
+                      <div key={s.id} style={{ background: 'hsl(var(--bg-dark) / 0.3)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))' }}>
+                        <h4 style={{ marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>{s.icon}</span>
+                          <span>{s.label}</span>
+                          <span style={{ fontSize: '11px', fontWeight: '400', color: 'hsl(var(--text-muted))', marginLeft: '4px' }}>({s.colorHint})</span>
+                        </h4>
+                        <div className="grid-cols-2" style={{ gap: '12px', marginBottom: '8px' }}>
+                          <div className="form-group">
+                            <label>Card Title</label>
+                            <input type="text" className="input-field" name={`cms_series_${s.id}_title`} value={cms[`cms_series_${s.id}_title`] || ''} onChange={handleChange} placeholder={s.label} />
+                          </div>
+                          <div className="form-group">
+                            <label>Episode Count Label</label>
+                            <input type="text" className="input-field" name={`cms_series_${s.id}_epcount`} value={cms[`cms_series_${s.id}_epcount`] || ''} onChange={handleChange} placeholder="e.g. 8 Episodes" />
+                          </div>
+                        </div>
+                        <div className="grid-cols-3" style={{ gap: '12px' }}>
+                          <div className="form-group">
+                            <label>Category Slug (local filter)</label>
+                            <input type="text" className="input-field" name={`cms_series_${s.id}_category`} value={cms[`cms_series_${s.id}_category`] || ''} onChange={handleChange} placeholder="e.g. tech" />
+                            <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>Used as ?category= in episodes page</span>
+                          </div>
+                          <div className="form-group">
+                            <label>Completion % (progress bar)</label>
+                            <input type="text" className="input-field" name={`cms_series_${s.id}_percentage`} value={cms[`cms_series_${s.id}_percentage`] || ''} onChange={handleChange} placeholder="e.g. 25%" />
+                          </div>
+                          <div className="form-group">
+                            <label>YouTube URL (optional)</label>
+                            <input type="text" className="input-field" name={`cms_series_${s.id}_youtube`} value={cms[`cms_series_${s.id}_youtube`] || ''} onChange={handleChange} placeholder="https://youtube.com/... or leave blank" />
+                            <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>Blank → local redirect; URL → opens YouTube</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </div>
           </div>
 
