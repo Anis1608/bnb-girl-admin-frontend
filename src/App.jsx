@@ -493,7 +493,7 @@ export default function App() {
               <Route path="/resources" element={<ResourcesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />} />
               <Route path="/submissions" element={<SubmissionsView apiFetch={apiFetch} showToast={showToast} onViewDetails={setSelectedSub} />} />
               <Route path="/stats" element={<StatsView apiFetch={apiFetch} showToast={showToast} />} />
-              <Route path="/cms" element={<CmsView apiFetch={apiFetch} showToast={showToast} />} />
+              <Route path="/cms" element={<CmsView apiFetch={apiFetch} showToast={showToast} episodes={episodes} />} />
               <Route path="/settings" element={<SettingsView apiFetch={apiFetch} showToast={showToast} />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
@@ -3497,7 +3497,7 @@ function SettingsView({ apiFetch, showToast }) {
 }
 
 // ── 9. CMS MANAGER VIEW ──────────────────────────────────────────────
-function CmsView({ apiFetch, showToast }) {
+function CmsView({ apiFetch, showToast, episodes }) {
   const [cms, setCms] = useState({
     cms_navbar_logo: '',
     cms_footer_tagline: '',
@@ -3554,7 +3554,9 @@ function CmsView({ apiFetch, showToast }) {
     cms_series_mental_title: '', cms_series_mental_epcount: '', cms_series_mental_category: '', cms_series_mental_youtube: '', cms_series_mental_percentage: '',
     cms_series_law_title: '', cms_series_law_epcount: '', cms_series_law_category: '', cms_series_law_youtube: '', cms_series_law_percentage: '',
     cms_series_creative_title: '', cms_series_creative_epcount: '', cms_series_creative_category: '', cms_series_creative_youtube: '', cms_series_creative_percentage: '',
-    cms_series_finance_title: '', cms_series_finance_epcount: '', cms_series_finance_category: '', cms_series_finance_youtube: '', cms_series_finance_percentage: ''
+    cms_series_finance_title: '', cms_series_finance_epcount: '', cms_series_finance_category: '', cms_series_finance_youtube: '', cms_series_finance_percentage: '',
+    // Spotlight
+    cms_spotlight_mentor_id: ''
   });
 
   const [loading, setLoading] = useState(true);
@@ -3664,6 +3666,7 @@ function CmsView({ apiFetch, showToast }) {
         <button type="button" className={`tab-btn ${activeSubTab === 'why' ? 'active' : ''}`} onClick={() => setActiveSubTab('why')}>Why Section</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'about' ? 'active' : ''}`} onClick={() => setActiveSubTab('about')}>About Page</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'series' ? 'active' : ''}`} onClick={() => setActiveSubTab('series')}>Series Collections</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'spotlight' ? 'active' : ''}`} onClick={() => setActiveSubTab('spotlight')}>🌟 Spotlight Guest</button>
       </div>
 
       <form onSubmit={handleSave}>
@@ -3973,6 +3976,69 @@ function CmsView({ apiFetch, showToast }) {
                         </div>
                       </div>
                     ))}
+                  </div>
+                );
+              })()}
+
+              {activeSubTab === 'spotlight' && (() => {
+                const selectedMentor = episodes.find(ep => String(ep.id) === String(cms.cms_spotlight_mentor_id));
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <h2>🌟 Spotlight: This Week's Guest</h2>
+                    <p style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginTop: '-12px' }}>
+                      Select which episode guest appears in the "This Week's Guest" section on the homepage. The selected mentor's full profile will be featured.
+                    </p>
+
+                    <div className="form-group">
+                      <label>Select Featured Guest (from Episodes)</label>
+                      <select
+                        className="select-field"
+                        name="cms_spotlight_mentor_id"
+                        value={cms.cms_spotlight_mentor_id || ''}
+                        onChange={handleChange}
+                      >
+                        <option value="">— Use default (most recently featured episode) —</option>
+                        {episodes.map(ep => (
+                          <option key={ep.id} value={ep.id}>
+                            EP.{ep.episode_number || '?'} — {ep.guest_name || ep.title} {ep.guest_role ? `· ${ep.guest_role}` : ''}
+                          </option>
+                        ))}
+                      </select>
+                      <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '4px', display: 'block' }}>
+                        Leave empty to automatically show the most recently featured/marked episode.
+                      </span>
+                    </div>
+
+                    {selectedMentor && (
+                      <div style={{ background: 'hsl(var(--bg-dark) / 0.4)', border: '1px solid hsl(var(--border-color))', borderRadius: 'var(--border-radius-md)', padding: '16px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                        {selectedMentor.guest_photo ? (
+                          <img src={selectedMentor.guest_photo} alt={selectedMentor.guest_name} style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)', flexShrink: 0 }} />
+                        ) : (
+                          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'hsl(var(--bg-surface))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0 }}>🎙️</div>
+                        )}
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: '700', fontSize: '15px', marginBottom: '4px' }}>{selectedMentor.guest_name}</div>
+                          <div style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginBottom: '4px' }}>{selectedMentor.guest_role}</div>
+                          <div style={{ fontSize: '12px', color: 'hsl(var(--text-muted))' }}>EP. {selectedMentor.episode_number} · {selectedMentor.category_name || ''}</div>
+                          {selectedMentor.guest_bio && (
+                            <div style={{ fontSize: '12px', color: 'hsl(var(--text-secondary))', marginTop: '8px', lineHeight: '1.5' }}>
+                              {selectedMentor.guest_bio.slice(0, 180)}{selectedMentor.guest_bio.length > 180 ? '...' : ''}
+                            </div>
+                          )}
+                          {selectedMentor.guest_quote && (
+                            <div style={{ fontSize: '12px', fontStyle: 'italic', color: 'var(--accent)', marginTop: '8px', borderLeft: '2px solid var(--accent)', paddingLeft: '8px' }}>
+                              "{selectedMentor.guest_quote.slice(0, 120)}{selectedMentor.guest_quote.length > 120 ? '...' : ''}"
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {!cms.cms_spotlight_mentor_id && (
+                      <div style={{ background: 'hsl(var(--info) / 0.08)', border: '1px solid hsl(var(--info) / 0.2)', borderRadius: 'var(--border-radius-md)', padding: '12px 16px', fontSize: '13px', color: 'hsl(var(--info))' }}>
+                        ℹ️ No guest selected — the homepage will auto-show the first featured or most recent episode guest.
+                      </div>
+                    )}
                   </div>
                 );
               })()}
