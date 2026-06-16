@@ -1072,12 +1072,15 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
       category_id: ep.category_id?._id || ep.category_id || '',
       subcategory_id: ep.subcategory_id?._id || ep.subcategory_id || '',
       specialized_field_id: ep.specialized_field_id?._id || ep.specialized_field_id || '',
-      episode_type: ep.episode_type || 'Interview'
+      episode_type: ep.episode_type || 'Interview',
+      slots_str: (ep.slots && ep.slots.length > 0) ? ep.slots.join(', ') : '',
+      pricing_arr: ep.pricing ? Object.entries(ep.pricing).map(([dur, price]) => ({ dur, price })) : []
     } : {
       title: '', guest_name: '', guest_role: '', guest_photo: '', guest_bio: '', guest_quote: '',
       episode_number: '', category_id: '', subcategory_id: '', specialized_field_id: '', episode_type: 'Interview',
       youtube_id: '', spotify_url: '', audio_url: '', duration: '', description: '', tags: '', is_featured: false, is_new: true,
-      is_mentor: false, mentor_rate: '', mentor_avail: '', mentor_linkedin: '', mentor_fields: '', status: 'published'
+      is_mentor: false, mentor_rate: '', mentor_avail: '', mentor_linkedin: '', mentor_fields: '', status: 'published',
+      slots_str: '', pricing_arr: []
     });
     setUploadFile(null);
   };
@@ -1112,10 +1115,29 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
         photoUrl = await handleFileUpload(uploadFile, apiFetch, showToast);
       }
 
+      const slots = typeof formData.slots_str === 'string'
+        ? formData.slots_str.split(',').map(s => s.trim()).filter(Boolean)
+        : (formData.slots || []);
+
+      const pricing = {};
+      (formData.pricing_arr || []).forEach(item => {
+        if (item.dur && item.price) {
+          pricing[item.dur] = item.price;
+        }
+      });
+      const durs = Object.keys(pricing).sort((a, b) => parseInt(a) - parseInt(b));
+
       const submissionData = {
         ...formData,
-        guest_photo: photoUrl
+        guest_photo: photoUrl,
+        slots,
+        pricing,
+        durs: durs.length > 0 ? durs : (formData.durs || ['30', '60'])
       };
+
+      // Sanitize empty slots_str and pricing_arr fields that are not in DB schema
+      delete submissionData.slots_str;
+      delete submissionData.pricing_arr;
 
       // Sanitize empty ObjectId fields to null to prevent casting errors in MongoDB
       if (submissionData.category_id === '') submissionData.category_id = null;
@@ -1487,12 +1509,89 @@ function EpisodesView({ apiFetch, showToast, showConfirm, categories, subcategor
                         value={formData.mentor_linkedin} onChange={handleTextChange} 
                       />
                     </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
+                    <div className="form-group">
                       <label>Expertise Areas (comma separated)</label>
                       <input 
                         type="text" className="input-field" name="mentor_fields" placeholder="e.g. Tech, Leadership, STEM"
                         value={formData.mentor_fields} onChange={handleTextChange} 
                       />
+                    </div>
+
+                    {/* Custom Slots Config */}
+                    <div className="form-group">
+                      <label>Available Slots (comma-separated times)</label>
+                      <input 
+                        type="text" className="input-field" name="slots_str" placeholder="e.g. 09:00, 09:30, 10:00, 11:30, 14:00"
+                        value={formData.slots_str || ''} onChange={handleTextChange} 
+                      />
+                      <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '2px' }}>Leave empty to use defaults (09:00 - 16:30 slots).</span>
+                    </div>
+
+                    {/* Pricing & Durations List */}
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '600' }}>
+                        <span>Custom Pricing by Duration</span>
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '4px 10px', fontSize: '12px', height: 'auto' }}
+                          onClick={() => {
+                            const current = formData.pricing_arr || [];
+                            setFormData(prev => ({
+                              ...prev,
+                              pricing_arr: [...current, { dur: '', price: '' }]
+                            }));
+                          }}
+                        >
+                          + Add Rate Option
+                        </button>
+                      </label>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
+                        {(formData.pricing_arr || []).map((item, idx) => (
+                          <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <input
+                              type="number"
+                              className="input-field"
+                              style={{ flex: 1 }}
+                              placeholder="Duration (minutes) e.g. 30"
+                              value={item.dur}
+                              onChange={(e) => {
+                                const list = [...formData.pricing_arr];
+                                list[idx].dur = e.target.value;
+                                setFormData(prev => ({ ...prev, pricing_arr: list }));
+                              }}
+                            />
+                            <input
+                              type="text"
+                              className="input-field"
+                              style={{ flex: 1 }}
+                              placeholder="Price e.g. $20"
+                              value={item.price}
+                              onChange={(e) => {
+                                const list = [...formData.pricing_arr];
+                                list[idx].price = e.target.value;
+                                setFormData(prev => ({ ...prev, pricing_arr: list }));
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm"
+                              style={{ padding: '8px 12px' }}
+                              onClick={() => {
+                                const list = (formData.pricing_arr || []).filter((_, i) => i !== idx);
+                                setFormData(prev => ({ ...prev, pricing_arr: list }));
+                              }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                        {(formData.pricing_arr || []).length === 0 && (
+                          <span style={{ fontSize: '12px', color: 'hsl(var(--text-muted))', fontStyle: 'italic' }}>
+                            No custom rates added. Standard calculations ($20 for 30m, $36 for 60m) will apply.
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1644,11 +1743,14 @@ function MentorsView({ apiFetch, showToast, showConfirm, categories, subcategori
       ...mentor,
       category_id: mentor.category_id?._id || mentor.category_id || '',
       specialized_field_id: mentor.specialized_field_id?._id || mentor.specialized_field_id || '',
-      subcategory_id: initialSubId
+      subcategory_id: initialSubId,
+      slots_str: (mentor.slots && mentor.slots.length > 0) ? mentor.slots.join(', ') : '',
+      pricing_arr: mentor.pricing ? Object.entries(mentor.pricing).map(([dur, price]) => ({ dur, price })) : []
     } : {
       name: '', role: '', photo: '', bio: '', quote: '', episode_id: '',
       linkedin: '', expertise_areas: '', rate: '', availability: '', category_id: '',
-      subcategory_id: '', specialized_field_id: '', is_featured: false, status: 'published'
+      subcategory_id: '', specialized_field_id: '', is_featured: false, status: 'published',
+      slots_str: '', pricing_arr: []
     });
     setUploadFile(null);
   };
@@ -1680,12 +1782,31 @@ function MentorsView({ apiFetch, showToast, showConfirm, categories, subcategori
         photoUrl = await handleFileUpload(uploadFile, apiFetch, showToast);
       }
 
+      const slots = typeof formData.slots_str === 'string'
+        ? formData.slots_str.split(',').map(s => s.trim()).filter(Boolean)
+        : (formData.slots || []);
+
+      const pricing = {};
+      (formData.pricing_arr || []).forEach(item => {
+        if (item.dur && item.price) {
+          pricing[item.dur] = item.price;
+        }
+      });
+      const durs = Object.keys(pricing).sort((a, b) => parseInt(a) - parseInt(b));
+
       const submissionData = {
         ...formData,
-        photo: photoUrl
+        photo: photoUrl,
+        slots,
+        pricing,
+        durs: durs.length > 0 ? durs : (formData.durs || ['30', '60'])
       };
 
       const { subcategory_id, ...mentorPayload } = submissionData;
+
+      // Sanitize empty slots_str and pricing_arr fields that are not in DB schema
+      delete mentorPayload.slots_str;
+      delete mentorPayload.pricing_arr;
 
       // Sanitize empty ObjectId fields to null to prevent MongoDB casting errors
       if (mentorPayload.category_id === '') mentorPayload.category_id = null;
@@ -1897,9 +2018,86 @@ function MentorsView({ apiFetch, showToast, showConfirm, categories, subcategori
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: 0 }}>
+              <div className="form-group">
                 <label>Expertise Areas (comma separated)</label>
                 <input type="text" className="input-field" name="expertise_areas" placeholder="e.g. Law, Startups, Design" value={formData.expertise_areas} onChange={handleTextChange} />
+              </div>
+
+              {/* Custom Slots Config */}
+              <div className="form-group">
+                <label>Available Slots (comma-separated times)</label>
+                <input 
+                  type="text" className="input-field" name="slots_str" placeholder="e.g. 09:00, 09:30, 10:00, 11:30, 14:00"
+                  value={formData.slots_str || ''} onChange={handleTextChange} 
+                />
+                <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '2px' }}>Leave empty to use defaults (09:00 - 16:30 slots).</span>
+              </div>
+
+              {/* Pricing & Durations List */}
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: '600' }}>
+                  <span>Custom Pricing by Duration</span>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    style={{ padding: '4px 10px', fontSize: '12px', height: 'auto' }}
+                    onClick={() => {
+                      const current = formData.pricing_arr || [];
+                      setFormData(prev => ({
+                        ...prev,
+                        pricing_arr: [...current, { dur: '', price: '' }]
+                      }));
+                    }}
+                  >
+                    + Add Rate Option
+                  </button>
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
+                  {(formData.pricing_arr || []).map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <input
+                        type="number"
+                        className="input-field"
+                        style={{ flex: 1 }}
+                        placeholder="Duration (minutes) e.g. 30"
+                        value={item.dur}
+                        onChange={(e) => {
+                          const list = [...formData.pricing_arr];
+                          list[idx].dur = e.target.value;
+                          setFormData(prev => ({ ...prev, pricing_arr: list }));
+                        }}
+                      />
+                      <input
+                        type="text"
+                        className="input-field"
+                        style={{ flex: 1 }}
+                        placeholder="Price e.g. $20"
+                        value={item.price}
+                        onChange={(e) => {
+                          const list = [...formData.pricing_arr];
+                          list[idx].price = e.target.value;
+                          setFormData(prev => ({ ...prev, pricing_arr: list }));
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        style={{ padding: '8px 12px' }}
+                        onClick={() => {
+                          const list = (formData.pricing_arr || []).filter((_, i) => i !== idx);
+                          setFormData(prev => ({ ...prev, pricing_arr: list }));
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  {(formData.pricing_arr || []).length === 0 && (
+                    <span style={{ fontSize: '12px', color: 'hsl(var(--text-muted))', fontStyle: 'italic' }}>
+                      No custom rates added. Standard calculations ($20 for 30m, $36 for 60m) will apply.
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
