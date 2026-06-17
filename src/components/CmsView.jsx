@@ -86,7 +86,27 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
     cms_resources_type_script_desc: '',
     cms_resources_coming_kicker: '',
     cms_resources_coming_title: '',
-    cms_resources_coming_subtitle: ''
+    cms_resources_coming_subtitle: '',
+    cms_resources_coming_card1_icon: '',
+    cms_resources_coming_card1_title: '',
+    cms_resources_coming_card1_desc: '',
+    cms_resources_coming_card1_tag: '',
+    cms_resources_coming_card1_notify: '',
+    cms_resources_coming_card2_icon: '',
+    cms_resources_coming_card2_title: '',
+    cms_resources_coming_card2_desc: '',
+    cms_resources_coming_card2_tag: '',
+    cms_resources_coming_card2_notify: '',
+    cms_resources_coming_card3_icon: '',
+    cms_resources_coming_card3_title: '',
+    cms_resources_coming_card3_desc: '',
+    cms_resources_coming_card3_tag: '',
+    cms_resources_coming_card3_notify: '',
+    cms_resources_coming_card4_icon: '',
+    cms_resources_coming_card4_title: '',
+    cms_resources_coming_card4_desc: '',
+    cms_resources_coming_card4_tag: '',
+    cms_resources_coming_card4_notify: ''
   });
 
   const [loading, setLoading] = useState(true);
@@ -702,6 +722,66 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
                     <div className="form-group">
                       <label>Coming Soon Subtitle</label>
                       <input type="text" className="input-field" name="cms_resources_coming_subtitle" value={cms.cms_resources_coming_subtitle} onChange={handleChange} placeholder="Notify me when they drop." />
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'hsl(var(--bg-dark) / 0.1)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginTop: '16px' }}>
+                    <h4 style={{ marginBottom: '16px' }}>Pipeline / Coming Soon Cards</h4>
+
+                    {/* Card 1 */}
+                    <div style={{ borderBottom: '1px solid hsl(var(--border-color))', paddingBottom: '16px', marginBottom: '16px' }}>
+                      <h5 style={{ margin: '0 0 12px 0', color: 'hsl(var(--text-primary))' }}>Card 1</h5>
+                      <div className="grid-cols-3" style={{ gap: '12px', marginBottom: '8px' }}>
+                        <div className="form-group"><label>Icon / Emoji</label><input type="text" className="input-field" name="cms_resources_coming_card1_icon" value={cms.cms_resources_coming_card1_icon} onChange={handleChange} placeholder="🏛️" /></div>
+                        <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_resources_coming_card1_title" value={cms.cms_resources_coming_card1_title} onChange={handleChange} placeholder="Breaking Into Law" /></div>
+                        <div className="form-group"><label>Tag (Category &amp; Date)</label><input type="text" className="input-field" name="cms_resources_coming_card1_tag" value={cms.cms_resources_coming_card1_tag} onChange={handleChange} placeholder="⚖️ Law · Q2 2026" /></div>
+                      </div>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group"><label>Description</label><input type="text" className="input-field" name="cms_resources_coming_card1_desc" value={cms.cms_resources_coming_card1_desc} onChange={handleChange} placeholder="Description..." /></div>
+                        <div className="form-group"><label>Notification Title Reference</label><input type="text" className="input-field" name="cms_resources_coming_card1_notify" value={cms.cms_resources_coming_card1_notify} onChange={handleChange} placeholder="Law Playbook" /></div>
+                      </div>
+                    </div>
+
+                    {/* Card 2 */}
+                    <div style={{ borderBottom: '1px solid hsl(var(--border-color))', paddingBottom: '16px', marginBottom: '16px' }}>
+                      <h5 style={{ margin: '0 0 12px 0', color: 'hsl(var(--text-primary))' }}>Card 2</h5>
+                      <div className="grid-cols-3" style={{ gap: '12px', marginBottom: '8px' }}>
+                        <div className="form-group"><label>Icon / Emoji</label><input type="text" className="input-field" name="cms_resources_coming_card2_icon" value={cms.cms_resources_coming_card2_icon} onChange={handleChange} placeholder="🎙️" /></div>
+                        <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_resources_coming_card2_title" value={cms.cms_resources_coming_card2_title} onChange={handleChange} placeholder="Healthcare Career Guide" /></div>
+                        <div className="form-group"><label>Tag (Category &amp; Date)</label><input type="text" className="input-field" name="cms_resources_coming_card2_tag" value={cms.cms_resources_coming_card2_tag} onChange={handleChange} placeholder="🏥 Healthcare · Coming June" /></div>
+                      </div>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group"><label>Description</label><input type="text" className="input-field" name="cms_resources_coming_card2_desc" value={cms.cms_resources_coming_card2_desc} onChange={handleChange} placeholder="Description..." /></div>
+                        <div className="form-group"><label>Notification Title Reference</label><input type="text" className="input-field" name="cms_resources_coming_card2_notify" value={cms.cms_resources_coming_card2_notify} onChange={handleChange} placeholder="Healthcare Guide" /></div>
+                      </div>
+                    </div>
+
+                    {/* Card 3 */}
+                    <div style={{ borderBottom: '1px solid hsl(var(--border-color))', paddingBottom: '16px', marginBottom: '16px' }}>
+                      <h5 style={{ margin: '0 0 12px 0', color: 'hsl(var(--text-primary))' }}>Card 3</h5>
+                      <div className="grid-cols-3" style={{ gap: '12px', marginBottom: '8px' }}>
+                        <div className="form-group"><label>Icon / Emoji</label><input type="text" className="input-field" name="cms_resources_coming_card3_icon" value={cms.cms_resources_coming_card3_icon} onChange={handleChange} placeholder="💡" /></div>
+                        <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_resources_coming_card3_title" value={cms.cms_resources_coming_card3_title} onChange={handleChange} placeholder="Founder's Toolkit" /></div>
+                        <div className="form-group"><label>Tag (Category &amp; Date)</label><input type="text" className="input-field" name="cms_resources_coming_card3_tag" value={cms.cms_resources_coming_card3_tag} onChange={handleChange} placeholder="🚀 Entrepreneurship · Q2 2026" /></div>
+                      </div>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group"><label>Description</label><input type="text" className="input-field" name="cms_resources_coming_card3_desc" value={cms.cms_resources_coming_card3_desc} onChange={handleChange} placeholder="Description..." /></div>
+                        <div className="form-group"><label>Notification Title Reference</label><input type="text" className="input-field" name="cms_resources_coming_card3_notify" value={cms.cms_resources_coming_card3_notify} onChange={handleChange} placeholder="Founder Toolkit" /></div>
+                      </div>
+                    </div>
+
+                    {/* Card 4 */}
+                    <div>
+                      <h5 style={{ margin: '0 0 12px 0', color: 'hsl(var(--text-primary))' }}>Card 4</h5>
+                      <div className="grid-cols-3" style={{ gap: '12px', marginBottom: '8px' }}>
+                        <div className="form-group"><label>Icon / Emoji</label><input type="text" className="input-field" name="cms_resources_coming_card4_icon" value={cms.cms_resources_coming_card4_icon} onChange={handleChange} placeholder="🎨" /></div>
+                        <div className="form-group"><label>Title</label><input type="text" className="input-field" name="cms_resources_coming_card4_title" value={cms.cms_resources_coming_card4_title} onChange={handleChange} placeholder="Creative Industry Rate Card" /></div>
+                        <div className="form-group"><label>Tag (Category &amp; Date)</label><input type="text" className="input-field" name="cms_resources_coming_card4_tag" value={cms.cms_resources_coming_card4_tag} onChange={handleChange} placeholder="🎨 Creative · Q3 2026" /></div>
+                      </div>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group"><label>Description</label><input type="text" className="input-field" name="cms_resources_coming_card4_desc" value={cms.cms_resources_coming_card4_desc} onChange={handleChange} placeholder="Description..." /></div>
+                        <div className="form-group"><label>Notification Title Reference</label><input type="text" className="input-field" name="cms_resources_coming_card4_notify" value={cms.cms_resources_coming_card4_notify} onChange={handleChange} placeholder="Creative Rate Guide" /></div>
+                      </div>
                     </div>
                   </div>
                 </div>
