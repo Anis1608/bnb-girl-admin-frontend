@@ -60,7 +60,19 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
     cms_series_creative_title: '', cms_series_creative_epcount: '', cms_series_creative_category: '', cms_series_creative_youtube: '', cms_series_creative_percentage: '',
     cms_series_finance_title: '', cms_series_finance_epcount: '', cms_series_finance_category: '', cms_series_finance_youtube: '', cms_series_finance_percentage: '',
     // Spotlight
-    cms_spotlight_mentor_id: ''
+    cms_spotlight_mentor_id: '',
+    // Resources page titles & stats
+    cms_resources_hero_eyebrow: '',
+    cms_resources_hero_title: '',
+    cms_resources_hero_subtitle: '',
+    cms_resources_stat_resources_num: '',
+    cms_resources_stat_resources_lbl: '',
+    cms_resources_stat_pdfs_num: '',
+    cms_resources_stat_pdfs_lbl: '',
+    cms_resources_stat_fields_num: '',
+    cms_resources_stat_fields_lbl: '',
+    cms_resources_stat_templates_num: '',
+    cms_resources_stat_templates_lbl: ''
   });
 
   const [loading, setLoading] = useState(true);
@@ -179,6 +191,7 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
         <button type="button" className={`tab-btn ${activeSubTab === 'about' ? 'active' : ''}`} onClick={() => setActiveSubTab('about')}>About Page</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'series' ? 'active' : ''}`} onClick={() => setActiveSubTab('series')}>Series Collections</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'spotlight' ? 'active' : ''}`} onClick={() => setActiveSubTab('spotlight')}>🌟 Spotlight Guest</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'resources_page' ? 'active' : ''}`} onClick={() => setActiveSubTab('resources_page')}>📚 Resources Page</button>
       </div>
 
       <form onSubmit={handleSave}>
@@ -556,6 +569,61 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
                   </div>
                 );
               })()}
+
+              {activeSubTab === 'resources_page' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>Resources Page Configuration</h2>
+                  <p style={{ fontSize: '13px', color: 'hsl(var(--text-secondary))', marginTop: '-12px' }}>
+                    Configure the header text, subtitles, and stats display on the main Resources library page.
+                  </p>
+
+                  <div className="form-group">
+                    <label>Hero Eyebrow Text</label>
+                    <input type="text" className="input-field" name="cms_resources_hero_eyebrow" value={cms.cms_resources_hero_eyebrow} onChange={handleChange} placeholder="Resource Library" />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Hero Title (Allows HTML / &lt;br/&gt;)</label>
+                    <input type="text" className="input-field" name="cms_resources_hero_title" value={cms.cms_resources_hero_title} onChange={handleChange} placeholder="Everything You Need to Build Your Career" />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Hero Subtitle</label>
+                    <textarea className="input-field" name="cms_resources_hero_subtitle" value={cms.cms_resources_hero_subtitle} onChange={handleChange} rows={3} placeholder="Episode PDFs, career guides, templates..." />
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '12px 0' }}></div>
+                  <h3>Stat Counter Boxes (Homepage / Resources Page)</h3>
+                  
+                  <div className="grid-cols-2" style={{ gap: '16px' }}>
+                    <div style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '12px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))' }}>
+                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Stat Box 1</label>
+                      <div className="form-group"><label>Value</label><input type="text" className="input-field" name="cms_resources_stat_resources_num" value={cms.cms_resources_stat_resources_num} onChange={handleChange} placeholder="48" /></div>
+                      <div className="form-group"><label>Label</label><input type="text" className="input-field" name="cms_resources_stat_resources_lbl" value={cms.cms_resources_stat_resources_lbl} onChange={handleChange} placeholder="Resources" /></div>
+                    </div>
+
+                    <div style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '12px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))' }}>
+                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Stat Box 2</label>
+                      <div className="form-group"><label>Value</label><input type="text" className="input-field" name="cms_resources_stat_pdfs_num" value={cms.cms_resources_stat_pdfs_num} onChange={handleChange} placeholder="28" /></div>
+                      <div className="form-group"><label>Label</label><input type="text" className="input-field" name="cms_resources_stat_pdfs_lbl" value={cms.cms_resources_stat_pdfs_lbl} onChange={handleChange} placeholder="Episode PDFs" /></div>
+                    </div>
+                  </div>
+
+                  <div className="grid-cols-2" style={{ gap: '16px', marginTop: '12px' }}>
+                    <div style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '12px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))' }}>
+                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Stat Box 3</label>
+                      <div className="form-group"><label>Value</label><input type="text" className="input-field" name="cms_resources_stat_fields_num" value={cms.cms_resources_stat_fields_num} onChange={handleChange} placeholder="8" /></div>
+                      <div className="form-group"><label>Label</label><input type="text" className="input-field" name="cms_resources_stat_fields_lbl" value={cms.cms_resources_stat_fields_lbl} onChange={handleChange} placeholder="Career Fields" /></div>
+                    </div>
+
+                    <div style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '12px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))' }}>
+                      <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Stat Box 4</label>
+                      <div className="form-group"><label>Value</label><input type="text" className="input-field" name="cms_resources_stat_templates_num" value={cms.cms_resources_stat_templates_num} onChange={handleChange} placeholder="12" /></div>
+                      <div className="form-group"><label>Label</label><input type="text" className="input-field" name="cms_resources_stat_templates_lbl" value={cms.cms_resources_stat_templates_lbl} onChange={handleChange} placeholder="Templates" /></div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
