@@ -72,7 +72,21 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
     cms_resources_stat_fields_num: '',
     cms_resources_stat_fields_lbl: '',
     cms_resources_stat_templates_num: '',
-    cms_resources_stat_templates_lbl: ''
+    cms_resources_stat_templates_lbl: '',
+    // Resources page types explainer & coming soon
+    cms_resources_types_kicker: '',
+    cms_resources_types_title: '',
+    cms_resources_type_pdf_desc: '',
+    cms_resources_type_guide_desc: '',
+    cms_resources_type_template_desc: '',
+    cms_resources_type_worksheet_desc: '',
+    cms_resources_type_reading_desc: '',
+    cms_resources_type_toolkit_desc: '',
+    cms_resources_type_salary_desc: '',
+    cms_resources_type_script_desc: '',
+    cms_resources_coming_kicker: '',
+    cms_resources_coming_title: '',
+    cms_resources_coming_subtitle: ''
   });
 
   const [loading, setLoading] = useState(true);
@@ -620,6 +634,74 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
                       <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Stat Box 4</label>
                       <div className="form-group"><label>Value</label><input type="text" className="input-field" name="cms_resources_stat_templates_num" value={cms.cms_resources_stat_templates_num} onChange={handleChange} placeholder="12" /></div>
                       <div className="form-group"><label>Label</label><input type="text" className="input-field" name="cms_resources_stat_templates_lbl" value={cms.cms_resources_stat_templates_lbl} onChange={handleChange} placeholder="Templates" /></div>
+                    </div>
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '20px 0' }}></div>
+                  <h3>8 Types of Resources Section</h3>
+                  <div className="grid-cols-2" style={{ gap: '16px' }}>
+                    <div className="form-group">
+                      <label>Types Kicker</label>
+                      <input type="text" className="input-field" name="cms_resources_types_kicker" value={cms.cms_resources_types_kicker} onChange={handleChange} placeholder="What's Inside" />
+                    </div>
+                    <div className="form-group">
+                      <label>Types Title (Allows HTML)</label>
+                      <input type="text" className="input-field" name="cms_resources_types_title" value={cms.cms_resources_types_title} onChange={handleChange} placeholder="8 Types of Resources, All Free to Download" />
+                    </div>
+                  </div>
+
+                  <div style={{ background: 'hsl(var(--bg-dark) / 0.1)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginTop: '12px' }}>
+                    <h4 style={{ marginBottom: '16px' }}>Descriptions for Resource Type Cards</h4>
+                    <div className="grid-cols-2" style={{ gap: '16px' }}>
+                      <div className="form-group">
+                        <label>1. Episode PDFs Description</label>
+                        <textarea className="input-field" name="cms_resources_type_pdf_desc" value={cms.cms_resources_type_pdf_desc} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>2. Career Guides Description</label>
+                        <textarea className="input-field" name="cms_resources_type_guide_desc" value={cms.cms_resources_type_guide_desc} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>3. Templates Description</label>
+                        <textarea className="input-field" name="cms_resources_type_template_desc" value={cms.cms_resources_type_template_desc} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>4. Workbooks Description</label>
+                        <textarea className="input-field" name="cms_resources_type_worksheet_desc" value={cms.cms_resources_type_worksheet_desc} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>5. Reading Lists Description</label>
+                        <textarea className="input-field" name="cms_resources_type_reading_desc" value={cms.cms_resources_type_reading_desc} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>6. Toolkits Description</label>
+                        <textarea className="input-field" name="cms_resources_type_toolkit_desc" value={cms.cms_resources_type_toolkit_desc} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>7. Salary Reports Description</label>
+                        <textarea className="input-field" name="cms_resources_type_salary_desc" value={cms.cms_resources_type_salary_desc} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>8. Scripts &amp; Emails Description</label>
+                        <textarea className="input-field" name="cms_resources_type_script_desc" value={cms.cms_resources_type_script_desc} onChange={handleChange} rows={2} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '20px 0' }}></div>
+                  <h3>🔒 Coming Soon Section Settings</h3>
+                  <div className="grid-cols-3" style={{ gap: '12px' }}>
+                    <div className="form-group">
+                      <label>Coming Soon Kicker</label>
+                      <input type="text" className="input-field" name="cms_resources_coming_kicker" value={cms.cms_resources_coming_kicker} onChange={handleChange} placeholder="🔒 Coming Soon" />
+                    </div>
+                    <div className="form-group">
+                      <label>Coming Soon Section Title</label>
+                      <input type="text" className="input-field" name="cms_resources_coming_title" value={cms.cms_resources_coming_title} onChange={handleChange} placeholder="Resources in the Pipeline" />
+                    </div>
+                    <div className="form-group">
+                      <label>Coming Soon Subtitle</label>
+                      <input type="text" className="input-field" name="cms_resources_coming_subtitle" value={cms.cms_resources_coming_subtitle} onChange={handleChange} placeholder="Notify me when they drop." />
                     </div>
                   </div>
                 </div>
