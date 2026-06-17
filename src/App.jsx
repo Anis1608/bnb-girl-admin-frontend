@@ -18,8 +18,8 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const showConfirm = (message, onConfirm) => {
-    setConfirmConfig({ message, onConfirm });
+  const showConfirm = (message, onConfirm, options = {}) => {
+    setConfirmConfig({ message, onConfirm, ...options });
   };
 
   const navigate = useNavigate();
@@ -307,10 +307,13 @@ export default function App() {
         <div className="confirm-overlay" onClick={() => setConfirmConfig(null)}>
           <div className="confirm-card" onClick={(e) => e.stopPropagation()}>
             <div className="confirm-header">
-              <div className="confirm-icon-wrap">
-                <Trash2 size={20} />
+              <div className="confirm-icon-wrap" style={{
+                background: confirmConfig.type === 'success' ? 'hsl(var(--success) / 0.15)' : 'hsl(var(--danger) / 0.15)',
+                color: confirmConfig.type === 'success' ? 'hsl(var(--success))' : 'hsl(var(--danger))'
+              }}>
+                {confirmConfig.type === 'success' ? <Check size={20} /> : <Trash2 size={20} />}
               </div>
-              <div className="confirm-title">Are you sure?</div>
+              <div className="confirm-title">{confirmConfig.title || 'Are you sure?'}</div>
             </div>
             <div className="confirm-body">{confirmConfig.message}</div>
             <div className="confirm-actions">
@@ -323,13 +326,13 @@ export default function App() {
               </button>
               <button 
                 type="button"
-                className="btn btn-danger" 
+                className={`btn ${confirmConfig.confirmClass || 'btn-danger'}`}
                 onClick={() => {
                   confirmConfig.onConfirm();
                   setConfirmConfig(null);
                 }}
               >
-                Delete
+                {confirmConfig.confirmText || 'Delete'}
               </button>
             </div>
           </div>
@@ -4158,33 +4161,51 @@ function MentorRequestsView({ apiFetch, showToast, showConfirm, onRefreshCount }
   }, []);
 
   const handleAccept = (app) => {
-    showConfirm(`Are you sure you want to ACCEPT ${app.name} as a mentor? This will make their profile live and send them an approval email.`, async () => {
-      try {
-        const res = await apiFetch(`/admin/mentor-applications/${app._id}/accept`, {
-          method: 'PUT'
-        });
-        showToast('Application accepted successfully!', 'success');
-        loadApplications();
-        if (onRefreshCount) onRefreshCount();
-      } catch (err) {
-        showToast(err.message, 'danger');
+    showConfirm(
+      `Are you sure you want to ACCEPT ${app.name} as a mentor? This will make their profile live and send them an approval email.`, 
+      async () => {
+        try {
+          const res = await apiFetch(`/admin/mentor-applications/${app._id}/accept`, {
+            method: 'PUT'
+          });
+          showToast('Application accepted successfully!', 'success');
+          loadApplications();
+          if (onRefreshCount) onRefreshCount();
+        } catch (err) {
+          showToast(err.message, 'danger');
+        }
+      },
+      {
+        title: 'Accept Application',
+        confirmText: 'Accept & Publish',
+        confirmClass: 'btn-primary',
+        type: 'success'
       }
-    });
+    );
   };
 
   const handleReject = (app) => {
-    showConfirm(`Are you sure you want to REJECT ${app.name}'s mentor application? This will send them a polite rejection email.`, async () => {
-      try {
-        const res = await apiFetch(`/admin/mentor-applications/${app._id}/reject`, {
-          method: 'PUT'
-        });
-        showToast('Application rejected.', 'info');
-        loadApplications();
-        if (onRefreshCount) onRefreshCount();
-      } catch (err) {
-        showToast(err.message, 'danger');
+    showConfirm(
+      `Are you sure you want to REJECT ${app.name}'s mentor application? This will send them a polite rejection email.`, 
+      async () => {
+        try {
+          const res = await apiFetch(`/admin/mentor-applications/${app._id}/reject`, {
+            method: 'PUT'
+          });
+          showToast('Application rejected.', 'info');
+          loadApplications();
+          if (onRefreshCount) onRefreshCount();
+        } catch (err) {
+          showToast(err.message, 'danger');
+        }
+      },
+      {
+        title: 'Reject Application',
+        confirmText: 'Reject Application',
+        confirmClass: 'btn-danger',
+        type: 'danger'
       }
-    });
+    );
   };
 
   const handleDelete = (app) => {
