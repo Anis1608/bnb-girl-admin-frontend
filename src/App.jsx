@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, Mic, Users, FolderTree, BookOpen, Inbox, BarChart3, 
+  LayoutDashboard, Mic, Users, FolderTree, BookOpen, Inbox, BarChart3, TrendingUp, 
   Settings as SettingsIcon, LogOut, Plus, Search, Download, Trash2, 
   Edit, Save, Upload, Link, FileText, CheckCircle, AlertCircle, Info, ExternalLink, X, PlusCircle, Check,
   Lock, User, Eye, EyeOff, ShieldCheck, UserCheck
@@ -17,6 +17,7 @@ import SubmissionsView from './components/SubmissionsView';
 import StatsView from './components/StatsView';
 import CmsView from './components/CmsView';
 import SettingsView from './components/SettingsView';
+import AnalysisView from './components/AnalysisView';
 
 const API_BASE = 'https://api.bnbgirl.com/api';
 
@@ -495,6 +496,10 @@ export default function App() {
             <Inbox size={18} />
             <span>Submissions</span>
           </div>
+          <div className={`menu-item ${activeView === 'analysis' ? 'active' : ''}`} onClick={() => handleViewChange('analysis')}>
+            <TrendingUp size={18} />
+            <span>Mentorship Analysis</span>
+          </div>
           <div className={`menu-item ${activeView === 'stats' ? 'active' : ''}`} onClick={() => handleViewChange('stats')}>
             <BarChart3 size={18} />
             <span>Stats Manager</span>
@@ -532,6 +537,7 @@ export default function App() {
               <Route path="/categories" element={<CategoriesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} loadGlobalLists={loadGlobalLists} />} />
               <Route path="/resources" element={<ResourcesView apiFetch={apiFetch} showToast={showToast} showConfirm={showConfirm} categories={categories} subcategories={subcategories} specializedFields={specializedFields} />} />
               <Route path="/submissions" element={<SubmissionsView apiFetch={apiFetch} showToast={showToast} onViewDetails={setSelectedSub} />} />
+              <Route path="/analysis" element={<AnalysisView apiFetch={apiFetch} showToast={showToast} />} />
               <Route path="/stats" element={<StatsView apiFetch={apiFetch} showToast={showToast} />} />
               <Route path="/cms" element={<CmsView apiFetch={apiFetch} showToast={showToast} episodes={episodes} />} />
               <Route path="/settings" element={<SettingsView apiFetch={apiFetch} showToast={showToast} />} />

@@ -1,0 +1,26 @@
+यह Error (Invalid conference type value) इसलिए आ रही है क्योंकि Service Account सीधे खुद के नाम पर Google Meet link generate नहीं कर सकता (जब तक कि वह किसी Workspace User को impersonate न करे)।
+
+इसके लिए हमें Google Workspace में Domain-Wide Delegation setup करके backend को sanah@bnbgirl.com (या आपके किसी भी business email) के नाम पर events/meetings create करने की अनुमति देनी होगी।
+
+मैंने backend code में और .env फ़ाइल में GOOGLE_IMPERSONATED_USER=sanah@bnbgirl.com configuration जोड़ दी है।
+
+अब आपको सिर्फ एक बार अपने Google Workspace Admin Console में जाकर यह setup करना होगा:
+
+🔑 Google Admin Console में Setup करने का Step-by-Step तरीका:
+Admin Console खोलें: admin.google.com पर जाएँ और अपनी admin email ID (जैसे sanah@bnbgirl.com) से login करें।
+API Controls पर जाएँ:
+Left menu में Security > Access and data control > API controls पर क्लिक करें।
+Domain-Wide Delegation खोलें:
+नीचे स्क्रॉल करें और Manage Domain Wide Delegation पर क्लिक करें।
+नया Client Add करें:
+Add new पर क्लिक करें।
+Client ID में यह डालें: 110936592910757585962 (यह आपकी JSON file में client_id है)
+OAuth Scopes में यह डालें: https://www.googleapis.com/auth/calendar
+Authorize पर क्लिक करके save कर दें।
+💻 इसके बाद Server को Update करें:
+अपने live server के hosting panel (Render/AWS) पर जाकर Environment Variables में यह नया variable भी add कर दें:
+Key: GOOGLE_IMPERSONATED_USER ➔ Value: sanah@bnbgirl.com
+सर्वर पर जाकर changes को pull करके restart करें:
+Local Machine पर: code को commit और push कर लें (जैसे पहले किया था)।
+Server पर: git pull करें और pm2 restart bnb-backend चलाएँ।
+इसके बाद, Service Account पूरी तरह से sanah@bnbgirl.com की identity लेकर valid Google Meet links create कर पाएगा!
