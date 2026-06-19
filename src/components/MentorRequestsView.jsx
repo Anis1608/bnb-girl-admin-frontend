@@ -32,7 +32,13 @@ export default function MentorRequestsView({ apiFetch, showToast, showConfirm, o
           const res = await apiFetch(`/admin/mentor-applications/${app._id}/accept`, {
             method: 'PUT'
           });
-          showToast('Application accepted successfully!', 'success');
+          if (res.emailSent) {
+            showToast('Application accepted & login credentials emailed successfully!', 'success');
+          } else {
+            showToast(`Accepted: ${res.message || 'Email could not be sent'}`, 'warning');
+          }
+          // Update local state immediately so UI updates instantly
+          setApplications(prev => prev.map(a => a._id === app._id ? { ...a, status: 'accepted' } : a));
           loadApplications();
           if (onRefreshCount) onRefreshCount();
         } catch (err) {
@@ -57,6 +63,8 @@ export default function MentorRequestsView({ apiFetch, showToast, showConfirm, o
             method: 'PUT'
           });
           showToast('Application rejected.', 'info');
+          // Update local state immediately so UI updates instantly
+          setApplications(prev => prev.map(a => a._id === app._id ? { ...a, status: 'rejected' } : a));
           loadApplications();
           if (onRefreshCount) onRefreshCount();
         } catch (err) {
@@ -79,6 +87,8 @@ export default function MentorRequestsView({ apiFetch, showToast, showConfirm, o
           method: 'DELETE'
         });
         showToast('Application deleted.', 'success');
+        // Update local state immediately so UI updates instantly
+        setApplications(prev => prev.filter(a => a._id !== app._id));
         loadApplications();
         if (onRefreshCount) onRefreshCount();
       } catch (err) {

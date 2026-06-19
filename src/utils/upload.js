@@ -1,4 +1,4 @@
-export const API_BASE = 'https://bnb-girl-backend.onrender.com/api';
+export const API_BASE = 'https://api.bnbgirl.com/api';
 
 // Helper to handle uploading files
 export async function handleFileUpload(file, showToast) {

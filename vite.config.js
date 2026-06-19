@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://bnb-girl-backend.onrender.com',
+        target: 'https://api.bnbgirl.com',
         changeOrigin: true
       }
     }

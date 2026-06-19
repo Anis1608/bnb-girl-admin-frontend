@@ -18,7 +18,7 @@ import StatsView from './components/StatsView';
 import CmsView from './components/CmsView';
 import SettingsView from './components/SettingsView';
 
-const API_BASE = 'https://bnb-girl-backend.onrender.com/api';
+const API_BASE = 'https://api.bnbgirl.com/api';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('bbg_token') || '');
@@ -84,6 +84,7 @@ export default function App() {
       headers['Authorization'] = `Bearer ${token}`;
     }
     const response = await fetch(`${API_BASE}${endpoint}`, {
+      cache: 'no-store',
       ...options,
       headers
     });
