@@ -42,12 +42,14 @@ export default function MentorsView({ apiFetch, showToast, showConfirm, categori
       specialized_field_id: mentor.specialized_field_id?._id || mentor.specialized_field_id || '',
       subcategory_id: initialSubId,
       slots_str: (mentor.slots && mentor.slots.length > 0) ? mentor.slots.join(', ') : '',
-      pricing_arr: mentor.pricing ? Object.entries(mentor.pricing).map(([dur, price]) => ({ dur, price })) : []
+      pricing_arr: mentor.pricing ? Object.entries(mentor.pricing).map(([dur, price]) => ({ dur, price })) : [],
+      meeting_link: mentor.meeting_link || ''
     } : {
       name: '', role: '', photo: '', bio: '', quote: '', episode_id: '',
       linkedin: '', expertise_areas: '', rate: '', availability: '', category_id: '',
       subcategory_id: '', specialized_field_id: '', is_featured: false, status: 'published',
-      slots_str: '', pricing_arr: []
+      slots_str: '', pricing_arr: [],
+      meeting_link: ''
     });
     setUploadFile(null);
   };
@@ -313,6 +315,12 @@ export default function MentorsView({ apiFetch, showToast, showConfirm, categori
                   <label>LinkedIn URL</label>
                   <input type="url" className="input-field" name="linkedin" placeholder="https://linkedin.com/..." value={formData.linkedin || ''} onChange={handleTextChange} />
                 </div>
+              </div>
+
+              <div className="form-group">
+                <label>Personal Meeting Link (Google Meet / Zoom / Calendly / Teams)</label>
+                <input type="url" className="input-field" name="meeting_link" placeholder="e.g. https://meet.google.com/... or https://zoom.us/..." value={formData.meeting_link || ''} onChange={handleTextChange} />
+                <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '2px' }}>If provided, bookings for this mentor will bypass the auto-generator and use this custom link.</span>
               </div>
 
               <div className="form-group">

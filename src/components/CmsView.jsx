@@ -106,12 +106,82 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
     cms_resources_coming_card4_title: '',
     cms_resources_coming_card4_desc: '',
     cms_resources_coming_card4_tag: '',
-    cms_resources_coming_card4_notify: ''
+    cms_resources_coming_card4_notify: '',
+    // Mentorship Page CMS
+    cms_mentor_hero_badge: '',
+    cms_mentor_hero_title: '',
+    cms_mentor_hero_subtitle1: '',
+    cms_mentor_hero_subtitle2: '',
+    cms_mentor_hero_podcast_text: '',
+    cms_mentor_hero_metric1_val: '',
+    cms_mentor_hero_metric1_lbl: '',
+    cms_mentor_hero_metric2_val: '',
+    cms_mentor_hero_metric2_lbl: '',
+    cms_mentor_hero_metric3_val: '',
+    cms_mentor_hero_metric3_lbl: '',
+    cms_mentor_hero_metric4_val: '',
+    cms_mentor_hero_metric4_lbl: '',
+    cms_mentor_ticker: '',
+    cms_mentor_list_title: '',
+    cms_mentor_list_quiz_lbl: '',
+    cms_mentor_stories_eyebrow: '',
+    cms_mentor_stories_title: '',
+    cms_mentor_stories_subtitle: '',
+    cms_mentor_stories_trust1_val: '',
+    cms_mentor_stories_trust1_lbl: '',
+    cms_mentor_stories_trust2_val: '',
+    cms_mentor_stories_trust2_lbl: '',
+    cms_mentor_stories_trust3_val: '',
+    cms_mentor_stories_trust3_lbl: '',
+    cms_mentor_story1_quote: '',
+    cms_mentor_story1_outcome: '',
+    cms_mentor_story1_author: '',
+    cms_mentor_story1_title: '',
+    cms_mentor_story1_via: '',
+    cms_mentor_story2_quote: '',
+    cms_mentor_story2_outcome: '',
+    cms_mentor_story2_author: '',
+    cms_mentor_story2_title: '',
+    cms_mentor_story2_via: '',
+    cms_mentor_story3_quote: '',
+    cms_mentor_story3_outcome: '',
+    cms_mentor_story3_author: '',
+    cms_mentor_story3_title: '',
+    cms_mentor_story3_via: '',
+    cms_mentor_companies_title: '',
+    cms_mentor_companies_list: '',
+    cms_mentor_why_eyebrow: '',
+    cms_mentor_why_title: '',
+    cms_mentor_why_subtitle: '',
+    cms_mentor_why_stat1_val: '',
+    cms_mentor_why_stat1_lbl: '',
+    cms_mentor_why_stat1_sub: '',
+    cms_mentor_why_stat2_val: '',
+    cms_mentor_why_stat2_lbl: '',
+    cms_mentor_why_stat2_sub: '',
+    cms_mentor_why_stat3_val: '',
+    cms_mentor_why_stat3_lbl: '',
+    cms_mentor_why_stat3_sub: '',
+    cms_mentor_why_stat4_val: '',
+    cms_mentor_why_stat4_lbl: '',
+    cms_mentor_why_stat4_sub: '',
+    cms_mentor_why_foot_text: '',
+    cms_mentor_why_foot_btn: '',
+    cms_mentor_faq_eyebrow: '',
+    cms_mentor_faq_title: '',
+    cms_mentor_faq_subtitle: '',
+    cms_mentor_faq_q1: '', cms_mentor_faq_a1: '',
+    cms_mentor_faq_q2: '', cms_mentor_faq_a2: '',
+    cms_mentor_faq_q3: '', cms_mentor_faq_a3: '',
+    cms_mentor_faq_q4: '', cms_mentor_faq_a4: '',
+    cms_mentor_faq_q5: '', cms_mentor_faq_a5: '',
+    cms_mentor_faq_q6: '', cms_mentor_faq_a6: ''
   });
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState('general');
+  const [activeMentorshipSection, setActiveMentorshipSection] = useState('hero');
   const [uploadingField, setUploadingField] = useState('');
   const [adminMentors, setAdminMentors] = useState([]);
 
@@ -226,6 +296,7 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
         <button type="button" className={`tab-btn ${activeSubTab === 'series' ? 'active' : ''}`} onClick={() => setActiveSubTab('series')}>Series Collections</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'spotlight' ? 'active' : ''}`} onClick={() => setActiveSubTab('spotlight')}>🌟 Spotlight Guest</button>
         <button type="button" className={`tab-btn ${activeSubTab === 'resources_page' ? 'active' : ''}`} onClick={() => setActiveSubTab('resources_page')}>📚 Resources Page</button>
+        <button type="button" className={`tab-btn ${activeSubTab === 'mentorship_page' ? 'active' : ''}`} onClick={() => setActiveSubTab('mentorship_page')}>🤝 Mentorship Page</button>
       </div>
 
       <form onSubmit={handleSave}>
@@ -784,6 +855,277 @@ export default function CmsView({ apiFetch, showToast, episodes }) {
                       </div>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {activeSubTab === 'mentorship_page' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <h2>🤝 Mentorship Page CMS Settings</h2>
+                  
+                  <div className="form-group">
+                    <label style={{ fontWeight: 'bold' }}>Choose Page Section to Edit</label>
+                    <select
+                      className="select-field"
+                      value={activeMentorshipSection}
+                      onChange={(e) => setActiveMentorshipSection(e.target.value)}
+                      style={{ padding: '8px', borderRadius: 'var(--border-radius-sm)', border: '1px solid hsl(var(--border-color))', width: '100%' }}
+                    >
+                      <option value="hero">Hero Section</option>
+                      <option value="metrics">Metrics/Stats Grid</option>
+                      <option value="ticker">Moving Ticker Phrases</option>
+                      <option value="list">Mentors Directory Header</option>
+                      <option value="stories">Student Success Stories</option>
+                      <option value="why">Why It Works Section</option>
+                      <option value="faq">FAQ Section</option>
+                    </select>
+                  </div>
+
+                  <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '10px 0' }}></div>
+
+                  {activeMentorshipSection === 'hero' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      <h3>Hero Section Configuration</h3>
+                      <div className="form-group">
+                        <label>Hero Badge Text</label>
+                        <input type="text" className="input-field" name="cms_mentor_hero_badge" value={cms.cms_mentor_hero_badge || ''} onChange={handleChange} placeholder="e.g. Verified women mentors · 100% confidential" />
+                      </div>
+                      <div className="form-group">
+                        <label>Hero Title (Allows HTML / &lt;br/&gt; / &lt;em class="gold"&gt;)</label>
+                        <textarea className="input-field" name="cms_mentor_hero_title" value={cms.cms_mentor_hero_title || ''} onChange={handleChange} rows={3} placeholder="The gap between where you are..." />
+                      </div>
+                      <div className="form-group">
+                        <label>Hero Subtitle 1 (Lede Text)</label>
+                        <textarea className="input-field" name="cms_mentor_hero_subtitle1" value={cms.cms_mentor_hero_subtitle1 || ''} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>Hero Subtitle 2 (Supporting Text)</label>
+                        <textarea className="input-field" name="cms_mentor_hero_subtitle2" value={cms.cms_mentor_hero_subtitle2 || ''} onChange={handleChange} rows={2} />
+                      </div>
+                      <div className="form-group">
+                        <label>Hero Podcast Banner Text</label>
+                        <input type="text" className="input-field" name="cms_mentor_hero_podcast_text" value={cms.cms_mentor_hero_podcast_text || ''} onChange={handleChange} />
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMentorshipSection === 'metrics' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      <h3>Hero Metrics Grid</h3>
+                      {[1, 2, 3, 4].map(num => (
+                        <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '12px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginBottom: '12px' }}>
+                          <h4 style={{ margin: '0 0 10px 0' }}>Metric {num}</h4>
+                          <div className="grid-cols-2" style={{ gap: '12px' }}>
+                            <div className="form-group">
+                              <label>Value (e.g. 87%, 3×, $85K)</label>
+                              <input type="text" className="input-field" name={`cms_mentor_hero_metric${num}_val`} value={cms[`cms_mentor_hero_metric${num}_val`] || ''} onChange={handleChange} />
+                            </div>
+                            <div className="form-group">
+                              <label>Label / Explanation</label>
+                              <input type="text" className="input-field" name={`cms_mentor_hero_metric${num}_lbl`} value={cms[`cms_mentor_hero_metric${num}_lbl`] || ''} onChange={handleChange} />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {activeMentorshipSection === 'ticker' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <h3>Moving Marquee Ticker</h3>
+                      <div className="form-group">
+                        <label>Semicolon-separated Phrases</label>
+                        <textarea className="input-field" name="cms_mentor_ticker" value={cms.cms_mentor_ticker || ''} onChange={handleChange} rows={6} placeholder="Phrase 1; Phrase 2; Phrase 3..." />
+                        <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))' }}>Separate phrases with semicolons (<code>;</code>)</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMentorshipSection === 'list' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <h3>Mentors Directory Header</h3>
+                      <div className="form-group">
+                        <label>Directory Section Title (Allows HTML / &lt;em&gt;)</label>
+                        <input type="text" className="input-field" name="cms_mentor_list_title" value={cms.cms_mentor_list_title || ''} onChange={handleChange} />
+                      </div>
+                      <div className="form-group">
+                        <label>Quiz Match Banner Label</label>
+                        <input type="text" className="input-field" name="cms_mentor_list_quiz_lbl" value={cms.cms_mentor_list_quiz_lbl || ''} onChange={handleChange} />
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMentorshipSection === 'stories' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      <h3>Student Success Stories</h3>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group">
+                          <label>Section Eyebrow</label>
+                          <input type="text" className="input-field" name="cms_mentor_stories_eyebrow" value={cms.cms_mentor_stories_eyebrow || ''} onChange={handleChange} />
+                        </div>
+                        <div className="form-group">
+                          <label>Section Title (Allows HTML)</label>
+                          <input type="text" className="input-field" name="cms_mentor_stories_title" value={cms.cms_mentor_stories_title || ''} onChange={handleChange} />
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label>Section Subtitle</label>
+                        <textarea className="input-field" name="cms_mentor_stories_subtitle" value={cms.cms_mentor_stories_subtitle || ''} onChange={handleChange} rows={2} />
+                      </div>
+
+                      <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '10px 0' }}></div>
+                      <h4>Trust Ratings Row</h4>
+                      <div className="grid-cols-3" style={{ gap: '12px' }}>
+                        {[1, 2, 3].map(num => (
+                          <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.1)', padding: '10px', borderRadius: 'var(--border-radius-sm)', border: '1px solid hsl(var(--border-color))' }}>
+                            <div className="form-group">
+                              <label>Metric {num} Value</label>
+                              <input type="text" className="input-field" name={`cms_mentor_stories_trust${num}_val`} value={cms[`cms_mentor_stories_trust${num}_val`] || ''} onChange={handleChange} />
+                            </div>
+                            <div className="form-group">
+                              <label>Metric {num} Label</label>
+                              <input type="text" className="input-field" name={`cms_mentor_stories_trust${num}_lbl`} value={cms[`cms_mentor_stories_trust${num}_lbl`] || ''} onChange={handleChange} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '10px 0' }}></div>
+                      <h4>Stories Cards</h4>
+                      {[1, 2, 3].map(num => (
+                        <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginBottom: '12px' }}>
+                          <h5 style={{ margin: '0 0 10px 0' }}>Story Card {num}</h5>
+                          <div className="form-group">
+                            <label>Quote Text</label>
+                            <textarea className="input-field" name={`cms_mentor_story${num}_quote`} value={cms[`cms_mentor_story${num}_quote`] || ''} onChange={handleChange} rows={2} />
+                          </div>
+                          <div className="grid-cols-2" style={{ gap: '12px', marginTop: '8px' }}>
+                            <div className="form-group">
+                              <label>Outcome Title</label>
+                              <input type="text" className="input-field" name={`cms_mentor_story${num}_outcome`} value={cms[`cms_mentor_story${num}_outcome`] || ''} onChange={handleChange} />
+                            </div>
+                            <div className="form-group">
+                              <label>Author Name</label>
+                              <input type="text" className="input-field" name={`cms_mentor_story${num}_author`} value={cms[`cms_mentor_story${num}_author`] || ''} onChange={handleChange} />
+                            </div>
+                          </div>
+                          <div className="grid-cols-2" style={{ gap: '12px', marginTop: '8px' }}>
+                            <div className="form-group">
+                              <label>Author Title / Location</label>
+                              <input type="text" className="input-field" name={`cms_mentor_story${num}_title`} value={cms[`cms_mentor_story${num}_title`] || ''} onChange={handleChange} />
+                            </div>
+                            <div className="form-group">
+                              <label>Via Mentor</label>
+                              <input type="text" className="input-field" name={`cms_mentor_story${num}_via`} value={cms[`cms_mentor_story${num}_via`] || ''} onChange={handleChange} />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '10px 0' }}></div>
+                      <h4>Mentors Placement/Company Banner</h4>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group">
+                          <label>Banner Header Text</label>
+                          <input type="text" className="input-field" name="cms_mentor_companies_title" value={cms.cms_mentor_companies_title || ''} onChange={handleChange} />
+                        </div>
+                        <div className="form-group">
+                          <label>Semicolon-separated Companies</label>
+                          <input type="text" className="input-field" name="cms_mentor_companies_list" value={cms.cms_mentor_companies_list || ''} onChange={handleChange} placeholder="Google; Meta; Amazon; Spotify" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMentorshipSection === 'why' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      <h3>Why It Works Section Copy</h3>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group">
+                          <label>Eyebrow Label</label>
+                          <input type="text" className="input-field" name="cms_mentor_why_eyebrow" value={cms.cms_mentor_why_eyebrow || ''} onChange={handleChange} />
+                        </div>
+                        <div className="form-group">
+                          <label>Section Title (Allows HTML / &lt;br/&gt;)</label>
+                          <input type="text" className="input-field" name="cms_mentor_why_title" value={cms.cms_mentor_why_title || ''} onChange={handleChange} />
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label>Section Subtitle</label>
+                        <textarea className="input-field" name="cms_mentor_why_subtitle" value={cms.cms_mentor_why_subtitle || ''} onChange={handleChange} rows={2} />
+                      </div>
+
+                      <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '10px 0' }}></div>
+                      <h4>Statistical Stat Cards (1-4)</h4>
+                      {[1, 2, 3, 4].map(num => (
+                        <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginBottom: '12px' }}>
+                          <h5 style={{ margin: '0 0 10px 0' }}>Stat Card {num}</h5>
+                          <div className="grid-cols-3" style={{ gap: '12px' }}>
+                            <div className="form-group">
+                              <label>Stat Value (e.g. 87%, 3×)</label>
+                              <input type="text" className="input-field" name={`cms_mentor_why_stat${num}_val`} value={cms[`cms_mentor_why_stat${num}_val`] || ''} onChange={handleChange} />
+                            </div>
+                            <div className="form-group">
+                              <label>Stat Label</label>
+                              <input type="text" className="input-field" name={`cms_mentor_why_stat${num}_lbl`} value={cms[`cms_mentor_why_stat${num}_lbl`] || ''} onChange={handleChange} />
+                            </div>
+                            <div className="form-group">
+                              <label>Source / Subtext</label>
+                              <input type="text" className="input-field" name={`cms_mentor_why_stat${num}_sub`} value={cms[`cms_mentor_why_stat${num}_sub`] || ''} onChange={handleChange} />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '10px 0' }}></div>
+                      <h4>Footer Area</h4>
+                      <div className="grid-cols-2" style={{ gap: '12px' }}>
+                        <div className="form-group">
+                          <label>Callout Text (Allows HTML)</label>
+                          <input type="text" className="input-field" name="cms_mentor_why_foot_text" value={cms.cms_mentor_why_foot_text || ''} onChange={handleChange} />
+                        </div>
+                        <div className="form-group">
+                          <label>Button Label</label>
+                          <input type="text" className="input-field" name="cms_mentor_why_foot_btn" value={cms.cms_mentor_why_foot_btn || ''} onChange={handleChange} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMentorshipSection === 'faq' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      <h3>FAQ Header</h3>
+                      <div className="grid-cols-3" style={{ gap: '12px' }}>
+                        <div className="form-group">
+                          <label>FAQ Eyebrow</label>
+                          <input type="text" className="input-field" name="cms_mentor_faq_eyebrow" value={cms.cms_mentor_faq_eyebrow || ''} onChange={handleChange} />
+                        </div>
+                        <div className="form-group">
+                          <label>FAQ Title (Allows HTML / &lt;br/&gt;)</label>
+                          <input type="text" className="input-field" name="cms_mentor_faq_title" value={cms.cms_mentor_faq_title || ''} onChange={handleChange} />
+                        </div>
+                        <div className="form-group">
+                          <label>FAQ Subtitle</label>
+                          <input type="text" className="input-field" name="cms_mentor_faq_subtitle" value={cms.cms_mentor_faq_subtitle || ''} onChange={handleChange} />
+                        </div>
+                      </div>
+
+                      <div style={{ height: '1px', background: 'hsl(var(--border-color))', margin: '10px 0' }}></div>
+                      <h4>FAQ Questions &amp; Answers</h4>
+                      {[1, 2, 3, 4, 5, 6].map(num => (
+                        <div key={num} style={{ background: 'hsl(var(--bg-dark) / 0.2)', padding: '16px', borderRadius: 'var(--border-radius-md)', border: '1px solid hsl(var(--border-color))', marginBottom: '12px' }}>
+                          <h5 style={{ margin: '0 0 10px 0' }}>FAQ Item {num}</h5>
+                          <div className="form-group" style={{ marginBottom: '8px' }}>
+                            <label>Question {num}</label>
+                            <input type="text" className="input-field" name={`cms_mentor_faq_q${num}`} value={cms[`cms_mentor_faq_q${num}`] || ''} onChange={handleChange} />
+                          </div>
+                          <div className="form-group">
+                            <label>Answer {num}</label>
+                            <textarea className="input-field" name={`cms_mentor_faq_a${num}`} value={cms[`cms_mentor_faq_a${num}`] || ''} onChange={handleChange} rows={3} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
