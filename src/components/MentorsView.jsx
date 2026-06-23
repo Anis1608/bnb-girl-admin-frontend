@@ -43,13 +43,15 @@ export default function MentorsView({ apiFetch, showToast, showConfirm, categori
       subcategory_id: initialSubId,
       slots_str: (mentor.slots && mentor.slots.length > 0) ? mentor.slots.join(', ') : '',
       pricing_arr: mentor.pricing ? Object.entries(mentor.pricing).map(([dur, price]) => ({ dur, price })) : [],
-      meeting_link: mentor.meeting_link || ''
+      meeting_link: mentor.meeting_link || '',
+      timezone: mentor.timezone || 'America/New_York'
     } : {
       name: '', role: '', photo: '', bio: '', quote: '', episode_id: '',
       linkedin: '', expertise_areas: '', rate: '', availability: '', category_id: '',
       subcategory_id: '', specialized_field_id: '', is_featured: false, status: 'published',
       slots_str: '', pricing_arr: [],
-      meeting_link: ''
+      meeting_link: '',
+      timezone: 'America/New_York'
     });
     setUploadFile(null);
   };
@@ -321,6 +323,11 @@ export default function MentorsView({ apiFetch, showToast, showConfirm, categori
                 <label>Personal Meeting Link (Google Meet / Zoom / Calendly / Teams)</label>
                 <input type="url" className="input-field" name="meeting_link" placeholder="e.g. https://meet.google.com/... or https://zoom.us/..." value={formData.meeting_link || ''} onChange={handleTextChange} />
                 <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '2px' }}>If provided, bookings for this mentor will bypass the auto-generator and use this custom link.</span>
+              </div>
+
+              <div className="form-group">
+                <label>Timezone (Auto-detected / Read-only)</label>
+                <input type="text" className="input-field" name="timezone" value={formData.timezone || 'America/New_York'} readOnly style={{ background: 'var(--bg-light)', cursor: 'not-allowed', opacity: 0.8 }} />
               </div>
 
               <div className="form-group">

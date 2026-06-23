@@ -42,12 +42,14 @@ export default function EpisodesView({ apiFetch, showToast, showConfirm, categor
       pdf_url: ep.pdf_url || '',
       slots_str: (ep.slots && ep.slots.length > 0) ? ep.slots.join(', ') : '',
       pricing_arr: ep.pricing ? Object.entries(ep.pricing).map(([dur, price]) => ({ dur, price })) : [],
-      mentor_meet_link: ep.mentor_meet_link || ''
+      mentor_meet_link: ep.mentor_meet_link || '',
+      mentor_email: ep.mentor_email || '',
+      mentor_timezone: ep.mentor_timezone || 'America/New_York'
     } : {
       title: '', guest_name: '', guest_role: '', guest_photo: '', guest_bio: '', guest_quote: '',
       episode_number: '', category_id: '', subcategory_id: '', specialized_field_id: '', episode_type: 'Interview',
       youtube_id: '', spotify_url: '', audio_url: '', pdf_url: '', duration: '', description: '', tags: '', is_featured: false, is_new: true,
-      is_mentor: false, mentor_rate: '', mentor_avail: '', mentor_linkedin: '', mentor_fields: '', mentor_meet_link: '', status: 'published',
+      is_mentor: false, mentor_rate: '', mentor_avail: '', mentor_linkedin: '', mentor_fields: '', mentor_meet_link: '', mentor_email: '', mentor_timezone: 'America/New_York', status: 'published',
       slots_str: '', pricing_arr: []
     });
     setUploadFile(null);
@@ -506,21 +508,32 @@ export default function EpisodesView({ apiFetch, showToast, showConfirm, categor
                         />
                       </div>
                     </div>
+                     <div className="form-group">
+                       <label>Mentor Email Address</label>
+                       <input 
+                         type="email" className="input-field" name="mentor_email" placeholder="e.g. mentor@bnbgirl.com"
+                         value={formData.mentor_email || ''} onChange={handleTextChange} 
+                       />
+                     </div>
+                     <div className="form-group">
+                       <label>LinkedIn URL</label>
+                       <input 
+                         type="url" className="input-field" name="mentor_linkedin" placeholder="https://linkedin.com/in/..."
+                         value={formData.mentor_linkedin || ''} onChange={handleTextChange} 
+                       />
+                     </div>
                     <div className="form-group">
-                      <label>LinkedIn URL</label>
-                      <input 
-                        type="url" className="input-field" name="mentor_linkedin" placeholder="https://linkedin.com/in/..."
-                        value={formData.mentor_linkedin || ''} onChange={handleTextChange} 
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Personal Meeting Link (Google Meet / Zoom / Calendly / Teams)</label>
-                      <input 
-                        type="url" className="input-field" name="mentor_meet_link" placeholder="e.g. https://meet.google.com/... or https://zoom.us/..."
-                        value={formData.mentor_meet_link || ''} onChange={handleTextChange} 
-                      />
-                      <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '2px' }}>If provided, bookings for this mentor will bypass the auto-generator and use this custom link.</span>
-                    </div>
+                       <label>Personal Meeting Link (Google Meet / Zoom / Calendly / Teams)</label>
+                       <input 
+                         type="url" className="input-field" name="mentor_meet_link" placeholder="e.g. https://meet.google.com/... or https://zoom.us/..."
+                         value={formData.mentor_meet_link || ''} onChange={handleTextChange} 
+                       />
+                       <span style={{ fontSize: '11px', color: 'hsl(var(--text-muted))', marginTop: '2px' }}>If provided, bookings for this mentor will bypass the auto-generator and use this custom link.</span>
+                     </div>
+                     <div className="form-group">
+                        <label>Mentor Timezone (Auto-detected / Read-only)</label>
+                        <input type="text" className="input-field" name="mentor_timezone" value={formData.mentor_timezone || 'America/New_York'} readOnly style={{ background: 'var(--bg-light)', cursor: 'not-allowed', opacity: 0.8 }} />
+                      </div>
                     <div className="form-group">
                       <label>Expertise Areas (comma separated)</label>
                       <input 
